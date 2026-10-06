@@ -144,9 +144,9 @@ def lex(data: bytes):
             col += 1
 
     if not line_start:
-        tokens.append(Token("NL", "\n", line, col))
+        tokens.append(Token("NL", "\n", line, col - 1))
     else:
         for _ in range(tabs):
             tokens.pop()
-    tokens.append(Token("EOF", "", line, col))
+    tokens.append(Token("EOF", "", line, col - 1))
     return tokens
