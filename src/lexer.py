@@ -17,6 +17,7 @@ def lex(data: bytes):
     data_len = len(data)
     line_start = True
     tabs = 0
+    spaces = 0
 
     def get_start_col():
         return col - (i - start)
@@ -39,9 +40,18 @@ def lex(data: bytes):
 
         if state == "START":
             start = i
+            if line_start and spaces and b not in (0x20, 0x0D, 0x0A, -1):
+                error("indentation must be a multiple of 4 spaces")
             if b == -1:
                 pass
-            elif b == 0x20 or b == 0x0D:        # space, \r
+            elif b == 0x20:                     # space
+                if line_start:
+                    spaces += 1
+                    if spaces == 4:
+                        tokens.append(Token("TAB", "    ", line, col - 3))
+                        tabs += 1
+                        spaces = 0
+            elif b == 0x0D:                     # \r
                 pass
             elif b == 0x09:                     # tab
                 if line_start:
@@ -55,7 +65,7 @@ def lex(data: bytes):
                     tokens.append(Token("NL", "\n", line, col))
                 line += 1
                 col = 0
-                line_start, tabs = True, 0
+                line_start, tabs, spaces = True, 0, 0
             elif is_alpha(b):
                 state = "IDENT"
             elif is_digit(b):
