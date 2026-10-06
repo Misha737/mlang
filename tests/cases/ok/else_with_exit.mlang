@@ -1,0 +1,6 @@
+int a
+if a == 1:
+	a = 2
+else:
+	exit 3
+exit a

@@ -1,0 +1,9 @@
+ProgramNode @1:1
+  body:
+    DeclStmt type_name='double' is_const=False name='d' @1:1
+    DeclStmt type_name='double' is_const=False name='e' @2:1
+      init:
+        NumberExpr text='5000000000' @2:12
+    ExitStmt @3:1
+      value:
+        NumberExpr text='0' @3:6

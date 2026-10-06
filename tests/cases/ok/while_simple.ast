@@ -1,0 +1,23 @@
+ProgramNode @1:1
+  body:
+    DeclStmt type_name='int' is_const=False name='i' @1:1
+    WhileStmt @2:1
+      cond:
+        BinaryExpr op='!=' @2:9
+          left:
+            IdentExpr name='i' @2:7
+          right:
+            NumberExpr text='10' @2:12
+      body:
+        BlockNode @3:1
+          body:
+            AssignStmt name='i' @3:2
+              value:
+                BinaryExpr op='+' @3:8
+                  left:
+                    IdentExpr name='i' @3:6
+                  right:
+                    NumberExpr text='1' @3:10
+    ExitStmt @4:1
+      value:
+        IdentExpr name='i' @4:6

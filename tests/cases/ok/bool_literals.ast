@@ -1,0 +1,11 @@
+ProgramNode @1:1
+  body:
+    DeclStmt type_name='bool' is_const=False name='a' @1:1
+      init:
+        BoolExpr value=True @1:10
+    DeclStmt type_name='bool' is_const=False name='b' @2:1
+      init:
+        BoolExpr value=False @2:10
+    ExitStmt @3:1
+      value:
+        NumberExpr text='0' @3:6
