@@ -14,11 +14,11 @@ def main():
                 print(f"{token.text!r} {token.kind} {token.line}:{token.col}")
             return
         tree = parse(tokens)
+        if args.ast:
+            print(tree.dump())
     except CompileError as e:
         print(f"compilation error: line {e}", file=sys.stderr)
         sys.exit(1)
-    if args.ast:
-        print(tree.dump())
 
 def parse_args():
     parser = argparse.ArgumentParser(description="mlang compiler")
