@@ -8,4 +8,4 @@ ProgramNode @1:1
         BoolExpr value=False @2:10
     ExitStmt @3:1
       value:
-        NumberExpr text='0' is_double=False @3:6
+        NumberExpr text='0' @3:6

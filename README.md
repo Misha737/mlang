@@ -20,16 +20,25 @@ exit a + b
 - One statement per line; the end of a line ends the statement. Blank lines are ignored.
 - Identifiers: letters, digits and `_`, not starting with a digit. Names are case-sensitive.
 - Keywords: `int double bool const exit true false if else while`.
-- Blocks are defined by indentation, there are no braces. One indentation level is one tab or exactly four spaces (they can be mixed). Any other number of leading spaces is an error.
-- There are no comments, no strings and no parentheses.
 
 ### Types
 
-Three types: `int` (`42`), `double` (`3.14`, digits are required on both sides of the dot) and `bool` (`true`, `false`).
+Three types, all without a fractional part:
+
+| Type     | Size           |
+| -------- | -------------- |
+| `int`    | signed 32 bits |
+| `double` | signed 64 bits |
+| `bool`   |                |
+
+`double` is the wide integer type (it is not a floating-point type). Literals are decimal integers (`42`) and `true`/`false`; a literal with a dot (`1.5`) is a lexical error. The type of an integer literal depends on its value: it is `int` if it fits in 32 bits, otherwise `double`.
+
+Mixing the two integer types promotes to the wider one: `int + double` is `double`, and an `int` can be assigned to a `double` variable. The other direction (`double` to `int`) is not allowed implicitly.
 
 ```
 int count = 10
-double ratio = 0.5
+double big = 5000000000
+double total = count + big
 bool done = false
 ```
 
@@ -39,7 +48,7 @@ bool done = false
 
 ```
 int x
-double const pi = 3.14
+double const limit = 5000000000
 bool const ready = true
 ```
 
@@ -72,7 +81,7 @@ bool other = !same
 
 ### Conditionals
 
-`if expr:` followed by an indented block, with an optional `else:` block at the same indentation. Blocks can be empty and can be nested.
+`if expr:` followed by an indented block, with an optional `else:` block at the same indentation. Every block must contain at least one statement (a block consisting only of `exit` counts) and blocks can be nested.
 
 ```
 int a = 3
@@ -86,7 +95,7 @@ exit a
 
 ### Loops
 
-`while expr:` followed by an indented block.
+`while expr:` followed by an indented block with at least one statement.
 
 ```
 int i = 0
@@ -105,6 +114,25 @@ if a == 2:
     exit 1
 exit a * 3
 ```
+
+### Overflow checks
+
+`int` is the range -2147483648 to 2147483647 and `double` is -9223372036854775808 to 9223372036854775807. There is no unary minus, so negative values are produced by subtraction (`0 - 5`). The checks belong to the semantic stage (the parser only records literals as text):
+
+- A literal outside the 64-bit range is a compile-time error. A literal that does not fit in `int` has type `double`.
+- `+`, `-` and `*` whose result does not fit the result type are an overflow error: the `int` range when both operands are `int`, the `double` range when at least one operand is `double`. If the operands are known at compile time it is reported at compile time, otherwise the generated program checks the result at run time and stops with an error instead of wrapping around.
+- Promotion happens before the check: in `int + double` the sum is computed as `double`, so it is checked against the `double` range, not the `int` one.
+- Assigning a value to a variable of a narrower type is a type error, not a silent truncation.
+- `bool` has no arithmetic.
+
+```
+int big = 2147483647
+int boom = big + 1
+double wide = big + 5000000000
+double bad = 9223372036854775808
+```
+
+Here `big + 1` is an overflow error (it is not wrapped to -2147483648), `big + 5000000000` is fine because the sum is a `double`, and `9223372036854775808` does not fit even in `double`.
 
 ### Errors
 

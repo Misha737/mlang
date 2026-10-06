@@ -7,10 +7,13 @@ ProgramNode @1:1
           left:
             IdentExpr name='a' @2:4
           right:
-            NumberExpr text='1' is_double=False @2:9
+            NumberExpr text='1' @2:9
       then_block:
         BlockNode @3:1
           body:
-    ExitStmt @3:1
+            ExitStmt @3:2
+              value:
+                NumberExpr text='1' @3:7
+    ExitStmt @4:1
       value:
-        NumberExpr text='0' is_double=False @3:6
+        NumberExpr text='0' @4:6

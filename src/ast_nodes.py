@@ -120,16 +120,15 @@ class ExprNode(ASTNode):
 
 
 class NumberExpr(ExprNode):
-    _fields = ("text", "is_double")
+    _fields = ("text",)
 
     def __init__(self, line, col, text):
         super().__init__(line, col)
         self.text = text
-        self.is_double = "." in text
 
     @property
     def value(self):
-        return float(self.text) if self.is_double else int(self.text)
+        return int(self.text)
 
 
 class BoolExpr(ExprNode):

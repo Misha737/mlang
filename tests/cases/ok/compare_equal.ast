@@ -7,7 +7,7 @@ ProgramNode @1:1
           left:
             IdentExpr name='a' @2:10
           right:
-            NumberExpr text='3' is_double=False @2:15
+            NumberExpr text='3' @2:15
     ExitStmt @3:1
       value:
-        NumberExpr text='0' is_double=False @3:6
+        NumberExpr text='0' @3:6

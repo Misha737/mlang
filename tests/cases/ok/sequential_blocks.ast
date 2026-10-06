@@ -7,20 +7,20 @@ ProgramNode @1:1
           left:
             IdentExpr name='a' @2:4
           right:
-            NumberExpr text='1' is_double=False @2:9
+            NumberExpr text='1' @2:9
       then_block:
         BlockNode @3:1
           body:
             AssignStmt name='a' @3:2
               value:
-                NumberExpr text='2' is_double=False @3:6
+                NumberExpr text='2' @3:6
     WhileStmt @4:1
       cond:
         BinaryExpr op='!=' @4:9
           left:
             IdentExpr name='a' @4:7
           right:
-            NumberExpr text='3' is_double=False @4:12
+            NumberExpr text='3' @4:12
       body:
         BlockNode @5:1
           body:
@@ -30,20 +30,20 @@ ProgramNode @1:1
                   left:
                     IdentExpr name='a' @5:6
                   right:
-                    NumberExpr text='1' is_double=False @5:10
+                    NumberExpr text='1' @5:10
     IfStmt @6:1
       cond:
         BinaryExpr op='==' @6:6
           left:
             IdentExpr name='a' @6:4
           right:
-            NumberExpr text='3' is_double=False @6:9
+            NumberExpr text='3' @6:9
       then_block:
         BlockNode @7:1
           body:
             AssignStmt name='a' @7:2
               value:
-                NumberExpr text='0' is_double=False @7:6
+                NumberExpr text='0' @7:6
     ExitStmt @8:1
       value:
         IdentExpr name='a' @8:6

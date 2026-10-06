@@ -9,13 +9,13 @@ ProgramNode @1:1
               left:
                 IdentExpr name='a' @2:10
               right:
-                NumberExpr text='1' is_double=False @2:14
+                NumberExpr text='1' @2:14
           right:
             BinaryExpr op='*' @2:21
               left:
                 IdentExpr name='a' @2:19
               right:
-                NumberExpr text='2' is_double=False @2:23
+                NumberExpr text='2' @2:23
     ExitStmt @3:1
       value:
-        NumberExpr text='0' is_double=False @3:6
+        NumberExpr text='0' @3:6

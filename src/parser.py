@@ -54,9 +54,11 @@ class Parser:
             if self.is_token("TAB"):
                 self.error("unexpected indentation")
             if self.is_token("keyword", "exit"):
-                body.append(self.parse_exit())
+                body.append(self.parse_exit(require_nl=False))
                 break
             body.append(self.parse_statement(0))
+        if self.is_token("NL"):
+            self.eat()
         if not self.is_token("EOF"):
             self.error(f"unexpected {describe(self.peek())} after 'exit'")
         return ProgramNode(first.line, first.col, body)
@@ -136,12 +138,15 @@ class Parser:
                     self.error("statement after 'exit' in block", self.peek(self.indent_count()))
                 break
             body.append(self.parse_statement(depth))
+        if not body:
+            self.error("block must contain at least one statement", first)
         return BlockNode(first.line, first.col, body)
 
-    def parse_exit(self):
+    def parse_exit(self, require_nl=True):
         keyword = self.eat()
         value = self.parse_expr()
-        self.expect("NL", what="end of line")
+        if require_nl:
+            self.expect("NL", what="end of line")
         return ExitStmt(keyword.line, keyword.col, value)
 
     def parse_expr(self):

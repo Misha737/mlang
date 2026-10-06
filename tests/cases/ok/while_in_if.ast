@@ -16,7 +16,7 @@ ProgramNode @1:1
                   left:
                     IdentExpr name='i' @4:8
                   right:
-                    NumberExpr text='3' is_double=False @4:13
+                    NumberExpr text='3' @4:13
               body:
                 BlockNode @5:1
                   body:
@@ -26,7 +26,7 @@ ProgramNode @1:1
                           left:
                             IdentExpr name='i' @5:7
                           right:
-                            NumberExpr text='1' is_double=False @5:11
+                            NumberExpr text='1' @5:11
     ExitStmt @6:1
       value:
         IdentExpr name='i' @6:6

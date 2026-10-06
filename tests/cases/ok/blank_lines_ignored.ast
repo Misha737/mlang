@@ -3,7 +3,7 @@ ProgramNode @1:1
     DeclStmt type_name='int' is_const=False name='a' @1:1
     AssignStmt name='a' @4:1
       value:
-        NumberExpr text='1' is_double=False @4:5
+        NumberExpr text='1' @4:5
     ExitStmt @7:1
       value:
         IdentExpr name='a' @7:6

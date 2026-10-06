@@ -3,4 +3,4 @@ ProgramNode @1:1
     DeclStmt type_name='bool' is_const=False name='flag' @1:1
     ExitStmt @2:1
       value:
-        NumberExpr text='0' is_double=False @2:6
+        NumberExpr text='0' @2:6

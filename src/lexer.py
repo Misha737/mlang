@@ -96,25 +96,8 @@ def lex(data: bytes):
         elif state == "INT":
             if b != -1 and is_digit(b):
                 pass
-            elif b == 0x2E:                     # .
-                state = "DOT"
             elif b != -1 and is_alpha(b):
                 error("invalid number: letter right after digits")
-            else:
-                emit("number")
-                state, advance = "START", False
-
-        elif state == "DOT":
-            if b != -1 and is_digit(b):
-                state = "FRAC"
-            else:
-                error("invalid number: digit expected after '.'")
-
-        elif state == "FRAC":
-            if b != -1 and is_digit(b):
-                pass
-            elif b == 0x2E or (b != -1 and is_alpha(b)):
-                error("invalid number")
             else:
                 emit("number")
                 state, advance = "START", False

@@ -8,7 +8,7 @@ ProgramNode @1:1
           left:
             IdentExpr name='a' @3:4
           right:
-            NumberExpr text='1' is_double=False @3:9
+            NumberExpr text='1' @3:9
       then_block:
         BlockNode @4:1
           body:
@@ -18,25 +18,25 @@ ProgramNode @1:1
                   left:
                     IdentExpr name='b' @4:5
                   right:
-                    NumberExpr text='2' is_double=False @4:10
+                    NumberExpr text='2' @4:10
               then_block:
                 BlockNode @5:1
                   body:
                     AssignStmt name='a' @5:3
                       value:
-                        NumberExpr text='3' is_double=False @5:7
+                        NumberExpr text='3' @5:7
               else_block:
                 BlockNode @7:1
                   body:
                     AssignStmt name='a' @7:3
                       value:
-                        NumberExpr text='4' is_double=False @7:7
+                        NumberExpr text='4' @7:7
       else_block:
         BlockNode @9:1
           body:
             AssignStmt name='b' @9:2
               value:
-                NumberExpr text='5' is_double=False @9:6
+                NumberExpr text='5' @9:6
     ExitStmt @10:1
       value:
         IdentExpr name='a' @10:6

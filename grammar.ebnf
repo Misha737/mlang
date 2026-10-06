@@ -5,7 +5,7 @@ assign    ::= ident "=" expr
 type      ::= "int" | "double" | "bool"
 if        ::= "if" expr ":" NL block [ "else" ":" NL block ]
 while     ::= "while" expr ":" NL block
-block     ::= { TAB statement } [ TAB exit NL ]
+block     ::= TAB statement { TAB statement } [ TAB exit NL ] | TAB exit NL
 exit      ::= "exit" expr
 expr      ::= arith [ ( "==" | "!=" ) arith ]
 arith     ::= term { ( "+" | "-" ) term }

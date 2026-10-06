@@ -1,8 +1,8 @@
 ProgramNode @1:1
   body:
-    DeclStmt type_name='double' is_const=True name='pi' @1:1
+    DeclStmt type_name='double' is_const=True name='big' @1:1
       init:
-        NumberExpr text='3.14' is_double=True @1:19
+        NumberExpr text='9000000000000' @1:20
     ExitStmt @2:1
       value:
-        NumberExpr text='0' is_double=False @2:6
+        NumberExpr text='0' @2:6
