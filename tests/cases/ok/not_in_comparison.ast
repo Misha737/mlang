@@ -1,0 +1,14 @@
+ProgramNode @1:1
+  body:
+    DeclStmt type_name='bool' is_const=False name='b' @1:1
+      init:
+        BinaryExpr op='==' @1:16
+          left:
+            UnaryExpr op='!' @1:10
+              operand:
+                BoolExpr value=True @1:11
+          right:
+            BoolExpr value=False @1:19
+    ExitStmt @2:1
+      value:
+        NumberExpr text='0' is_double=False @2:6

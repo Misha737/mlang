@@ -1,0 +1,19 @@
+ProgramNode @1:1
+  body:
+    DeclStmt type_name='int' is_const=False name='a' @1:1
+    DeclStmt type_name='int' is_const=False name='b' @2:1
+    DeclStmt type_name='int' is_const=False name='c' @3:1
+    AssignStmt name='a' @4:1
+      value:
+        BinaryExpr op='-' @4:11
+          left:
+            BinaryExpr op='-' @4:7
+              left:
+                IdentExpr name='a' @4:5
+              right:
+                IdentExpr name='b' @4:9
+          right:
+            IdentExpr name='c' @4:13
+    ExitStmt @5:1
+      value:
+        IdentExpr name='a' @5:6

@@ -1,0 +1,16 @@
+ProgramNode @1:1
+  body:
+    DeclStmt type_name='int' is_const=False name='a' @1:1
+    IfStmt @2:1
+      cond:
+        BinaryExpr op='==' @2:6
+          left:
+            IdentExpr name='a' @2:4
+          right:
+            NumberExpr text='1' is_double=False @2:9
+      then_block:
+        BlockNode @3:1
+          body:
+    ExitStmt @3:1
+      value:
+        NumberExpr text='0' is_double=False @3:6

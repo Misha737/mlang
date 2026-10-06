@@ -1,0 +1,3 @@
+int const k = 4
+bool const t = true
+exit k

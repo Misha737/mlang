@@ -1,0 +1,32 @@
+ProgramNode @1:1
+  body:
+    DeclStmt type_name='int' is_const=False name='i' @1:1
+    DeclStmt type_name='bool' is_const=False name='go' @2:1
+      init:
+        BoolExpr value=True @2:11
+    IfStmt @3:1
+      cond:
+        IdentExpr name='go' @3:4
+      then_block:
+        BlockNode @4:1
+          body:
+            WhileStmt @4:2
+              cond:
+                BinaryExpr op='!=' @4:10
+                  left:
+                    IdentExpr name='i' @4:8
+                  right:
+                    NumberExpr text='3' is_double=False @4:13
+              body:
+                BlockNode @5:1
+                  body:
+                    AssignStmt name='i' @5:3
+                      value:
+                        BinaryExpr op='+' @5:9
+                          left:
+                            IdentExpr name='i' @5:7
+                          right:
+                            NumberExpr text='1' is_double=False @5:11
+    ExitStmt @6:1
+      value:
+        IdentExpr name='i' @6:6

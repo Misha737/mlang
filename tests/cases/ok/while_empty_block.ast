@@ -1,0 +1,12 @@
+ProgramNode @1:1
+  body:
+    DeclStmt type_name='bool' is_const=False name='b' @1:1
+    WhileStmt @2:1
+      cond:
+        IdentExpr name='b' @2:7
+      body:
+        BlockNode @3:1
+          body:
+    ExitStmt @3:1
+      value:
+        NumberExpr text='0' is_double=False @3:6

@@ -1,0 +1,42 @@
+ProgramNode @1:1
+  body:
+    DeclStmt type_name='int' is_const=False name='a' @1:1
+    DeclStmt type_name='int' is_const=False name='b' @2:1
+    IfStmt @3:1
+      cond:
+        BinaryExpr op='==' @3:6
+          left:
+            IdentExpr name='a' @3:4
+          right:
+            NumberExpr text='1' is_double=False @3:9
+      then_block:
+        BlockNode @4:1
+          body:
+            IfStmt @4:2
+              cond:
+                BinaryExpr op='==' @4:7
+                  left:
+                    IdentExpr name='b' @4:5
+                  right:
+                    NumberExpr text='2' is_double=False @4:10
+              then_block:
+                BlockNode @5:1
+                  body:
+                    AssignStmt name='a' @5:3
+                      value:
+                        NumberExpr text='3' is_double=False @5:7
+              else_block:
+                BlockNode @7:1
+                  body:
+                    AssignStmt name='a' @7:3
+                      value:
+                        NumberExpr text='4' is_double=False @7:7
+      else_block:
+        BlockNode @9:1
+          body:
+            AssignStmt name='b' @9:2
+              value:
+                NumberExpr text='5' is_double=False @9:6
+    ExitStmt @10:1
+      value:
+        IdentExpr name='a' @10:6
