@@ -1,0 +1,29 @@
+ProgramNode @1:1
+  structs:
+  functions:
+  statements:
+    DeclStmt type_name='int' is_const=False name='a' @1:1
+      init:
+        NumberExpr text='1' @1:9
+    PrintStmt @2:1
+      value:
+        StringExpr text='hello, world' @2:7
+    PrintStmt @3:1
+      value:
+        StringExpr text='' @3:7
+    PrintStmt @4:1
+      value:
+        BinaryExpr op='+' @4:9
+          left:
+            IdentExpr name='a' @4:7
+          right:
+            NumberExpr text='2' @4:11
+    PrintStmt @5:1
+      value:
+        UnaryExpr op='!' @5:7
+          operand:
+            BoolExpr value=True @5:8
+  exit:
+    ExitStmt @6:1
+      value:
+        NumberExpr text='0' @6:6

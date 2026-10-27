@@ -1,0 +1,42 @@
+ProgramNode @1:1
+  structs:
+    StructDecl name='Counter' @1:1
+      members:
+        FieldDecl type_name='int' is_const=False name='value' @2:5
+        FunctionDecl return_type='int' name='scaled' @3:5
+          params:
+            ParamNode type_name='int' name='k' @3:16
+          body:
+            BlockNode @4:1
+              body:
+                ExitStmt @4:9
+                  value:
+                    BinaryExpr op='*' @4:20
+                      left:
+                        IdentExpr name='value' @4:14
+                      right:
+                        IdentExpr name='k' @4:22
+  functions:
+  statements:
+    DeclStmt type_name='Counter' is_const=False name='c' @6:1
+      init:
+        InitExpr @6:11
+          values:
+            NumberExpr text='3' @6:12
+    ExprStmt @7:1
+      expr:
+        ChainExpr is_callable=True @7:1
+          items:
+            IdentExpr name='c' @7:1
+            CallExpr name='scaled' @7:3
+              args:
+                NumberExpr text='2' @7:10
+  exit:
+    ExitStmt @8:1
+      value:
+        ChainExpr is_callable=True @8:6
+          items:
+            IdentExpr name='c' @8:6
+            CallExpr name='scaled' @8:8
+              args:
+                NumberExpr text='4' @8:15

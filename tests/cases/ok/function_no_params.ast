@@ -1,0 +1,17 @@
+ProgramNode @1:1
+  structs:
+  functions:
+    FunctionDecl return_type='int' name='answer' @1:1
+      params:
+      body:
+        BlockNode @2:1
+          body:
+            ExitStmt @2:5
+              value:
+                NumberExpr text='42' @2:10
+  statements:
+  exit:
+    ExitStmt @4:1
+      value:
+        CallExpr name='answer' @4:6
+          args:

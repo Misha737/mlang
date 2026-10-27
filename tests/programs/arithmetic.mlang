@@ -1,0 +1,7 @@
+int a = 7
+int b = 3
+print(a + b)
+print(a - b)
+print(a * b)
+print(a + b * 2)
+exit 0

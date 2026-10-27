@@ -1,6 +1,7 @@
 import sys
 
 from cases import collect, check_ok, check_err
+from programs import LLI, collect_programs, check_program
 
 
 def main():
@@ -14,6 +15,15 @@ def main():
             print(f"{status} {kind}/{source.stem}")
             if problems:
                 failed.append((f"{kind}/{source.stem}", problems))
+
+    if LLI is None:
+        print("programs: skipped, lli is not installed")
+    for source in collect_programs() if LLI else []:
+        total += 1
+        problems = check_program(source)
+        print(f"{'FAIL' if problems else 'ok  '} programs/{source.stem}")
+        if problems:
+            failed.append((f"programs/{source.stem}", problems))
 
     print()
     if failed:

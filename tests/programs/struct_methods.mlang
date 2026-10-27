@@ -1,0 +1,15 @@
+struct Counter:
+    int value
+    int step
+    int next():
+        value = value + step
+        exit value
+    int get():
+        exit value
+
+Counter c {0, 5}
+print(c.next())
+print(c.next())
+print(c.get())
+print(c)
+exit 0

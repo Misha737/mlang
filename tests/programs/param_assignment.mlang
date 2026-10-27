@@ -1,0 +1,8 @@
+int bump(int a):
+    a = a + 1
+    exit a
+
+int x = 1
+print(bump(x))
+print(x)
+exit 0

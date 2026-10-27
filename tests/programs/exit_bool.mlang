@@ -1,0 +1,2 @@
+bool ok = 3 == 3
+exit ok

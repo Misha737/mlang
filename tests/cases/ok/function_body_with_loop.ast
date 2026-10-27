@@ -1,0 +1,39 @@
+ProgramNode @1:1
+  structs:
+  functions:
+    FunctionDecl return_type='int' name='count' @1:1
+      params:
+        ParamNode type_name='int' name='n' @1:11
+      body:
+        BlockNode @2:1
+          body:
+            DeclStmt type_name='int' is_const=False name='i' @2:5
+              init:
+                NumberExpr text='0' @2:13
+            WhileStmt @3:5
+              cond:
+                BinaryExpr op='!=' @3:13
+                  left:
+                    IdentExpr name='i' @3:11
+                  right:
+                    IdentExpr name='n' @3:16
+              body:
+                BlockNode @4:1
+                  body:
+                    AssignStmt name='i' @4:9
+                      value:
+                        BinaryExpr op='+' @4:15
+                          left:
+                            IdentExpr name='i' @4:13
+                          right:
+                            NumberExpr text='1' @4:17
+            ExitStmt @5:5
+              value:
+                IdentExpr name='i' @5:10
+  statements:
+  exit:
+    ExitStmt @7:1
+      value:
+        CallExpr name='count' @7:6
+          args:
+            NumberExpr text='3' @7:12

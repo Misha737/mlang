@@ -1,0 +1,6 @@
+struct A:
+    int x
+
+A a {1}
+print(a.nope())
+exit 0

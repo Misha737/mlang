@@ -1,0 +1,4 @@
+if true:
+    int a = 2
+print(a)
+exit 0

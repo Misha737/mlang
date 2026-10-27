@@ -1,0 +1,7 @@
+int f(int a, int b):
+    exit a + b
+
+int g(int n):
+    exit n
+
+exit f(g(1), 2)

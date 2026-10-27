@@ -1,0 +1,4 @@
+int answer():
+    exit 42
+
+exit answer()

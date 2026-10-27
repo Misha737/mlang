@@ -1,0 +1,29 @@
+ProgramNode @1:1
+  structs:
+    StructDecl name='Point' @1:1
+      members:
+        FieldDecl type_name='int' is_const=False name='x' @2:5
+        FieldDecl type_name='int' is_const=False name='y' @3:5
+  functions:
+  statements:
+    DeclStmt type_name='int' is_const=False name='a' @5:1
+      init:
+        NumberExpr text='2' @5:9
+    DeclStmt type_name='Point' is_const=False name='p' @6:1
+      init:
+        InitExpr @6:9
+          values:
+            BinaryExpr op='+' @6:12
+              left:
+                IdentExpr name='a' @6:10
+              right:
+                NumberExpr text='1' @6:14
+            BinaryExpr op='*' @6:19
+              left:
+                IdentExpr name='a' @6:17
+              right:
+                NumberExpr text='3' @6:21
+  exit:
+    ExitStmt @7:1
+      value:
+        NumberExpr text='0' @7:6

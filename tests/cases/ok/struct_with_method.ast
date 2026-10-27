@@ -1,0 +1,19 @@
+ProgramNode @1:1
+  structs:
+    StructDecl name='Counter' @1:1
+      members:
+        FieldDecl type_name='int' is_const=False name='value' @2:5
+        FunctionDecl return_type='int' name='get' @3:5
+          params:
+          body:
+            BlockNode @4:1
+              body:
+                ExitStmt @4:9
+                  value:
+                    IdentExpr name='value' @4:14
+  functions:
+  statements:
+  exit:
+    ExitStmt @5:1
+      value:
+        NumberExpr text='0' @5:6

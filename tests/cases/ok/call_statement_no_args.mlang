@@ -1,0 +1,5 @@
+int run():
+    exit 0
+
+run()
+exit 0

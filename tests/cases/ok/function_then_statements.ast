@@ -1,0 +1,26 @@
+ProgramNode @1:1
+  structs:
+  functions:
+    FunctionDecl return_type='int' name='twice' @1:1
+      params:
+        ParamNode type_name='int' name='n' @1:11
+      body:
+        BlockNode @2:1
+          body:
+            ExitStmt @2:5
+              value:
+                BinaryExpr op='+' @2:12
+                  left:
+                    IdentExpr name='n' @2:10
+                  right:
+                    IdentExpr name='n' @2:14
+  statements:
+    DeclStmt type_name='int' is_const=False name='a' @4:1
+      init:
+        CallExpr name='twice' @4:9
+          args:
+            NumberExpr text='4' @4:15
+  exit:
+    ExitStmt @5:1
+      value:
+        IdentExpr name='a' @5:6

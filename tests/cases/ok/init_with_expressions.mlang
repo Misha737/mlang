@@ -1,0 +1,7 @@
+struct Point:
+    int x
+    int y
+
+int a = 2
+Point p {a + 1, a * 3}
+exit 0

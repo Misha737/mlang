@@ -1,0 +1,12 @@
+struct Counter:
+    int value
+    int inc():
+        value = value + 1
+        exit value
+    int twice():
+        inc()
+        exit inc()
+
+Counter const c {0}
+int x = c.twice()
+exit x

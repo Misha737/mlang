@@ -1,10 +1,10 @@
 from entities import *
 
 def is_alpha(b: int) -> bool:
-    return b == 0x5F or (0x41 <= b <= 0x5A) or (0x61 <= b <= 0x7A)
+    return b == ord('_') or (ord('A') <= b <= ord('Z')) or (ord('a') <= b <= ord('z'))
 
 def is_digit(b: int) -> bool:
-    return 0x30 <= b <= 0x39
+    return ord('0') <= b <= ord('9')
 
 def is_arithmetic(b: int) -> bool:
     return b in [ ord(x) for x in ARITHMETIC_OPERATORS ]
@@ -18,6 +18,8 @@ def lex(data: bytes):
     line_start = True
     tabs = 0
     spaces = 0
+    depth = 0
+    tab_cols = []
 
     def get_start_col():
         return col - (i - start)
@@ -28,65 +30,84 @@ def lex(data: bytes):
     def emit(kind, txt=None):
         nonlocal line_start
         tokens.append(Token(kind, txt if txt is not None else text(), line, get_start_col()))
-        if kind != "TAB":
-            line_start = False
+        line_start = False
 
     def error(msg):
         raise CompileError(f"{line}:{col}: {msg}")
 
     while i <= data_len:
-        b = data[i] if i < data_len else -1
+        byte = data[i] if i < data_len else -1
         advance = True
 
         if state == "START":
             start = i
-            if line_start and spaces and b not in (0x20, 0x0D, 0x0A, -1):
+            if line_start and spaces and byte not in (ord(' '), ord('\r'), ord('\n'), -1):
                 error("indentation must be a multiple of 4 spaces")
-            if b == -1:
+            if line_start and byte not in (ord(' '), ord('\t'), ord('\r'), ord('\n'), -1):
+                while depth < tabs:
+                    tokens.append(Token("INDENT", "", line, tab_cols[depth]))
+                    depth += 1
+                while depth > tabs:
+                    tokens.append(Token("DEDENT", "", line, col))
+                    depth -= 1
+                line_start = False
+            if byte == -1:
                 pass
-            elif b == 0x20:                     # space
+            elif byte == ord(' '):
                 if line_start:
                     spaces += 1
                     if spaces == 4:
-                        tokens.append(Token("TAB", "    ", line, col - 3))
+                        tab_cols.append(col - 3)
                         tabs += 1
                         spaces = 0
-            elif b == 0x0D:                     # \r
+            elif byte == ord('\r'):
                 pass
-            elif b == 0x09:                     # tab
+            elif byte == ord('\t'):
                 if line_start:
-                    tokens.append(Token("TAB", "\t", line, col))
+                    tab_cols.append(col)
                     tabs += 1
-            elif b == 0x0A:                     # \n
-                if line_start:
-                    for _ in range(tabs):
-                        tokens.pop()
-                else:
+            elif byte == ord('\n'):
+                if not line_start:
                     tokens.append(Token("NL", "\n", line, col))
                 line += 1
                 col = 0
                 line_start, tabs, spaces = True, 0, 0
-            elif is_alpha(b):
+                tab_cols = []
+            elif is_alpha(byte):
                 state = "IDENT"
-            elif is_digit(b):
+            elif is_digit(byte):
                 state = "INT"
-            elif b == 0x3D:                     # =
+            elif byte == ord('='):
                 state = "EQ"
-            elif b == 0x21:                     # !
+            elif byte == ord('!'):
                 state = "BANG"
-            elif is_arithmetic(b):
+            elif is_arithmetic(byte):
                 i += 1; col += 1
                 emit("operator")
                 i -= 1; col -= 1
-            elif b == 0x3A:                     # :
+            elif byte == ord(':'):
                 i += 1; col += 1
                 emit("colon")
                 i -= 1; col -= 1
+            elif byte == ord('('):
+                emit("lbracket", '(')
+            elif byte == ord(')'):
+                emit("rbracket", ')')
+            elif byte == ord(','):
+                emit("coma", ',')
+            elif byte == ord('{'):
+                emit("lbrace", '{')
+            elif byte == ord('}'):
+                emit("rbrace", '}')
+            elif byte == ord('.') and tokens and tokens[-1].kind in ("ident", "rbracket"):
+                emit("dot", '.')
+            elif byte == ord('"'):
+                state = "STRING"
             else:
-                error(f"unexpected character {chr(b)!r}")
+                error(f"unexpected character {chr(byte)!r}")
 
         elif state == "IDENT":
-            if b != -1 and (is_alpha(b) or is_digit(b)):
+            if byte != -1 and (is_alpha(byte) or is_digit(byte)):
                 pass
             else:
                 word = data[start:i]
@@ -94,32 +115,39 @@ def lex(data: bytes):
                 state, advance = "START", False
 
         elif state == "INT":
-            if b != -1 and is_digit(b):
+            if byte != -1 and is_digit(byte):
                 pass
-            elif b != -1 and is_alpha(b):
+            elif byte != -1 and is_alpha(byte):
                 error("invalid number: letter right after digits")
             else:
                 emit("number")
                 state, advance = "START", False
 
+        elif state == "STRING":
+            if byte == ord('"'):
+                emit("string", data[start + 1:i].decode("utf-8", errors="replace"))
+                state = "START"
+            elif byte in (ord('\n'), -1):
+                raise CompileError(f"{line}:{get_start_col()}: unterminated string")
+
         elif state == "EQ":
-            if b == 0x3D:                       # ==
+            if byte == ord('='):
                 i += 1; col += 1
                 emit("operator")
                 i -= 1; col -= 1
                 state = "START"
             else:
-                emit("operator")                # =
+                emit("operator")
                 state, advance = "START", False
 
         elif state == "BANG":
-            if b == 0x3D:                       # !=
+            if byte == ord('='):
                 i += 1; col += 1
                 emit("operator")
                 i -= 1; col -= 1
                 state = "START"
             else:
-                emit("operator")                # !
+                emit("operator")
                 state, advance = "START", False
 
         if advance:
@@ -128,8 +156,7 @@ def lex(data: bytes):
 
     if not line_start:
         tokens.append(Token("NL", "\n", line, col - 1))
-    else:
-        for _ in range(tabs):
-            tokens.pop()
+    for _ in range(depth):
+        tokens.append(Token("DEDENT", "", line, col - 1))
     tokens.append(Token("EOF", "", line, col - 1))
     return tokens

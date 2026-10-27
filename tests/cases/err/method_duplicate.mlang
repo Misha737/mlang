@@ -1,0 +1,7 @@
+struct S:
+    int v
+    int m():
+        exit 1
+    int m():
+        exit 2
+exit 0

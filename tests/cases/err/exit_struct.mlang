@@ -1,0 +1,5 @@
+struct P:
+    int x
+
+P p {1}
+exit p

@@ -1,0 +1,36 @@
+ProgramNode @1:1
+  structs:
+  functions:
+    FunctionDecl return_type='int' name='f' @1:1
+      params:
+        ParamNode type_name='int' name='a' @1:7
+        ParamNode type_name='int' name='b' @1:14
+      body:
+        BlockNode @2:1
+          body:
+            ExitStmt @2:5
+              value:
+                BinaryExpr op='+' @2:12
+                  left:
+                    IdentExpr name='a' @2:10
+                  right:
+                    IdentExpr name='b' @2:14
+    FunctionDecl return_type='int' name='g' @4:1
+      params:
+        ParamNode type_name='int' name='n' @4:7
+      body:
+        BlockNode @5:1
+          body:
+            ExitStmt @5:5
+              value:
+                IdentExpr name='n' @5:10
+  statements:
+  exit:
+    ExitStmt @7:1
+      value:
+        CallExpr name='f' @7:6
+          args:
+            CallExpr name='g' @7:8
+              args:
+                NumberExpr text='1' @7:10
+            NumberExpr text='2' @7:14

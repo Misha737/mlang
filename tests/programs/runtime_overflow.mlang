@@ -1,0 +1,5 @@
+int n = read()
+print("before")
+int m = n + 1
+print("after")
+exit 0
