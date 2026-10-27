@@ -1,0 +1,5 @@
+int i
+while i != 5:
+	i = i + 1
+	exit i
+exit 0

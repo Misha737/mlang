@@ -1,0 +1,6 @@
+ProgramNode @1:1
+  body:
+    DeclStmt type_name='int' is_const=True name='k' @1:1
+    ExitStmt @2:1
+      value:
+        NumberExpr text='0' @2:6

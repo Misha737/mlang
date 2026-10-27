@@ -1,0 +1,5 @@
+int a
+while a != 1:
+
+
+exit 0

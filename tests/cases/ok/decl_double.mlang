@@ -1,0 +1,3 @@
+double d
+double e = 5000000000
+exit 0

@@ -1,0 +1,7 @@
+ProgramNode @1:1
+  body:
+    ExitStmt @1:1
+      value:
+        UnaryExpr op='!' @1:6
+          operand:
+            BoolExpr value=False @1:7

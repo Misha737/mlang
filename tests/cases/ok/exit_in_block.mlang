@@ -1,0 +1,5 @@
+int a
+if a == 0:
+	a = 1
+	exit a
+exit 0

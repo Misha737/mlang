@@ -1,0 +1,6 @@
+int i
+bool go = true
+if go:
+	while i != 3:
+		i = i + 1
+exit i
