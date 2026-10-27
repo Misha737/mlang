@@ -22,6 +22,9 @@ KEYWORDS = {
     b"if": "keyword",
     b"else": "keyword",
     b"while": "keyword",
+    b"struct": "keyword",
+    b"print": "keyword",
+    b"read": "keyword",
 }
 
 ARITHMETIC_OPERATORS = ["+", "-", "*"]

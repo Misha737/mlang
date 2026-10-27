@@ -7,8 +7,10 @@ def describe(token) -> str:
         return "end of line"
     if token.kind == "EOF":
         return "end of file"
-    if token.kind == "TAB":
+    if token.kind == "INDENT":
         return "indentation"
+    if token.kind == "DEDENT":
+        return "end of block"
     return repr(token.text)
 
 
@@ -39,39 +41,33 @@ class Parser:
             self.error(f"expected {what or repr(text) or kind}, found {describe(self.peek())}")
         return self.eat()
 
-    def indent_count(self):
-        n = 0
-        while self.is_token("TAB", k=n):
-            n += 1
-        return n
-
     def parse_program(self):
         first = self.peek()
         body = []
         while True:
             if self.is_token("EOF"):
                 self.error("expected 'exit', found end of file")
-            if self.is_token("TAB"):
+            if self.is_token("INDENT"):
                 self.error("unexpected indentation")
             if self.is_token("keyword", "exit"):
                 body.append(self.parse_exit(require_nl=False))
                 break
-            body.append(self.parse_statement(0))
+            body.append(self.parse_statement())
         if self.is_token("NL"):
             self.eat()
         if not self.is_token("EOF"):
             self.error(f"unexpected {describe(self.peek())} after 'exit'")
         return ProgramNode(first.line, first.col, body)
 
-    def parse_statement(self, depth):
+    def parse_statement(self):
         token = self.peek()
         if token.kind == "keyword":
             if token.text in TYPE_NAMES:
                 return self.parse_decl()
             if token.text == "if":
-                return self.parse_if(depth)
+                return self.parse_if()
             if token.text == "while":
-                return self.parse_while(depth)
+                return self.parse_while()
         elif token.kind == "ident":
             return self.parse_assign()
         self.error(f"unexpected {describe(token)}, expected a statement")
@@ -97,50 +93,45 @@ class Parser:
         self.expect("NL", what="end of line")
         return AssignStmt(name.line, name.col, name.text, value)
 
-    def parse_if(self, depth):
+    def parse_if(self):
         keyword = self.eat()
         cond = self.parse_expr()
         self.expect("colon", ":")
         self.expect("NL", what="end of line")
-        then_block = self.parse_block(depth + 1)
+        then_block = self.parse_block()
         else_block = None
-        if self.indent_count() == depth and self.is_token("keyword", "else", k=depth):
-            for _ in range(depth):
-                self.eat()
+        if self.is_token("keyword", "else"):
             self.eat()
             self.expect("colon", ":")
             self.expect("NL", what="end of line")
-            else_block = self.parse_block(depth + 1)
+            else_block = self.parse_block()
         return IfStmt(keyword.line, keyword.col, cond, then_block, else_block)
 
-    def parse_while(self, depth):
+    def parse_while(self):
         keyword = self.eat()
         cond = self.parse_expr()
         self.expect("colon", ":")
         self.expect("NL", what="end of line")
-        body = self.parse_block(depth + 1)
+        body = self.parse_block()
         return WhileStmt(keyword.line, keyword.col, cond, body)
 
-    def parse_block(self, depth):
+    def parse_block(self):
         first = self.peek()
+        if not self.is_token("INDENT"):
+            self.error("block must contain at least one statement", first)
+        self.eat()
         body = []
-        while True:
-            count = self.indent_count()
-            if count < depth:
-                break
-            if count > depth:
-                self.error("unexpected indentation", self.peek(depth))
-            for _ in range(depth):
-                self.eat()
+        while not self.is_token("DEDENT"):
+            if self.is_token("INDENT"):
+                self.error("unexpected indentation")
             if self.is_token("keyword", "exit"):
                 body.append(self.parse_exit())
-                if self.indent_count() >= depth:
-                    self.error("statement after 'exit' in block", self.peek(self.indent_count()))
+                if not self.is_token("DEDENT"):
+                    self.error("statement after 'exit' in block")
                 break
-            body.append(self.parse_statement(depth))
-        if not body:
-            self.error("block must contain at least one statement", first)
-        return BlockNode(first.line, first.col, body)
+            body.append(self.parse_statement())
+        self.eat()
+        return BlockNode(first.line, 1, body)
 
     def parse_exit(self, require_nl=True):
         keyword = self.eat()
