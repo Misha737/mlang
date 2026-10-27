@@ -1,13 +1,27 @@
-program   ::= { statement } exit
-statement ::= ( decl | assign | if | while ) NL
-decl      ::= type ["const"] ident ["=" expr]
-assign    ::= ident "=" expr
-type      ::= "int" | "double" | "bool"
-if        ::= "if" expr ":" NL block [ "else" ":" NL block ]
-while     ::= "while" expr ":" NL block
-block     ::= TAB statement { TAB statement } [ TAB exit NL ] | TAB exit NL
-exit      ::= "exit" expr
-expr      ::= arith [ ( "==" | "!=" ) arith ]
-arith     ::= term { ( "+" | "-" ) term }
-term      ::= factor { "*" factor }
-factor    ::= number | "true" | "false" | ident | "!" factor
+program     ::= { struct } { function } { statement } exit
+statement   ::= ( decl | assign | if | while | print NL | chain NL )
+struct      ::= "struct" ident ":" NL INDENT ( field_decl | function ) { ( field_decl | function ) } DEDENT
+field_decl  ::= type [ "const" ] ident NL
+init        ::= "{" value { "," value } "}"
+value       ::= expr | init
+decl        ::= type [ "const" ] ident [ "=" expr | init ] NL
+assign      ::= ident { "." ident } "=" expr NL
+function    ::= type ident "(" [ type ident { "," type ident } ] ")" ":" NL block
+call        ::= ident "(" [ expr { "," expr } ] ")"
+chain       ::= ( call | ident ) { "." ( call | ident ) }
+type        ::= "int" | "double" | "bool" | ident
+if          ::= "if" expr ":" NL block [ "else" ":" NL block ]
+while       ::= "while" expr ":" NL block
+block       ::= INDENT ( statement { statement } [ exit NL ] | exit NL ) DEDENT
+exit        ::= "exit" expr
+expr        ::= arith [ ( "==" | "!=" ) arith ]
+arith       ::= term { ( "+" | "-" ) term }
+term        ::= factor { "*" factor }
+factor      ::= number | "true" | "false" | chain | "!" factor | read
+string      ::= '"' { any byte except '"' and newline } '"'
+print       ::= "print" "(" ( expr | string ) ")"
+read        ::= "read" "(" ")"
+
+
+(* INDENT - beginning of nesting *)
+(* DEDENT - closing nesting *)
