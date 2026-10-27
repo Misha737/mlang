@@ -1,18 +1,45 @@
 - I used artificial intelligence to explain the theory of the parser, practical tasks, and asked for advice on implementation.
 - I used AI as a tutor in Python. I asked questions about methods and what they do.
 - AI was also used as an analyzer of potential errors in my code. I gave it my code and asked it to find weak spots and potential bugs.
-- AI was also used to implement some methods.
+- AI was also used to implement some methods (more details below).
 - AI was also used to build tests (valid and fail) using pytest
 - AI was also used to write README.md
 
 AI tools:
     Claude, Claude Code
 
-Case where AI changed, found a bug and helped fix it:
-    After defining the grammar in grammar.ebnf, implementing the lexer, parser, and manual testing,
-    I saw an error in the grammar regarding tabulation.
-    After fixing the grammar, AI found another error in the design regarding tabulation, which I also fixed.
-    Also, AI fixed a bug in the parser accordingly.
+Lexer:
+    ШІ був використаний щоб додати новий токен "string". Також змінив загардкодженні шістнадцяткові коди на функції ord("символ").
+    Також коли я додав вручну токени дужок, спочатку ШІ запропонував змінювати індекси для правильного обрізання тексту (який зберігається в токені).
+    Я цю ідею відкинув. Також ші запропонував заповнювати напряму текст, що я і зробив.
 
-Chat:
-    https://claude.ai/share/15e3e32a-3c1a-4b63-b2fc-c4280a5f0601
+AST Nodes and Parser:
+    Спочатку я вручну записав основні ноди які були описані в граматиці та відповідні методи. Потім я поставив завдання для ШІ щоб він написав карказ для інших нодів,
+    але клод незрозумів мене і написав реалізацію класів для всіх нових нодів та методів парсера. Переглянувши код, я його залишив, тому що коли код його писав,
+    він брав приклад на реалізацію старого коду. В подальшому я ще додатково змюнював поля нодів.
+
+Semantic and code reneration:
+    Для початку я вручну написав основу для semantic.py та generator.py. Написав клас та деякі методи (check(), visit_program(), конструктор). Потім попросив ШІ що він
+    реалізував всі інші методи. Після перегляду я залишив код.
+
+Tests:
+    За допомогою ШІ додав наступне:
+        40 нових тестів які порівнюють з ast expected output.
+        Повноцінні програми, де тести перевіряють з виходом цих програм. Деякі приймають значення (з **.in). Директорія tests/programs
+        Тобто всі тести згенеровані ШІ.
+        Інколи для їх генерації в промпті я надавав чітки кейси перевірки
+
+README:
+    Попросив ШІ щоб описала новий функціонал мови: приклади, правила семантичної перевірки
+
+    Тобто всі зміни в README.md робив ШІ.
+
+
+Загалом користувався клодом щоб зекономити час на руттину роботу. Наприклад додати до кожного класу Node його перевизначення accept(), що
+вручну зайняло б багато часу. Інколи я з ним совєтувався як до досвідченого програміста. Наприклад як реалізувати глибину табуляцій.
+
+Загалом ШІ писав код так, як я хотів, але в наступний раз потрібно забороняти ШІ робити те що непотрібно щоб він не брав на себе роль архітектора.
+Тобто задавати йому рамки виконання.
+
+
+Повний час сесії:
