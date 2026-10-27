@@ -77,7 +77,7 @@ class Parser:
             if token.text == "print":
                 return self.parse_print()
         elif token.kind == "ident":
-            if self.is_token("ident", k=1):
+            if self.is_token("ident", k=1) or self.is_token("keyword", "const", k=1):
                 return self.parse_decl()
             return self.parse_assign()
         self.error(f"unexpected {describe(token)}, expected a statement")

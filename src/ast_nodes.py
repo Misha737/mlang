@@ -353,5 +353,13 @@ class StructDecl(ASTNode):
         self.name = name
         self.members = members
 
+    @property
+    def fields(self):
+        return [m for m in self.members if isinstance(m, FieldDecl)]
+
+    @property
+    def methods(self):
+        return [m for m in self.members if isinstance(m, FunctionDecl)]
+
     def accept(self, visitor):
         return visitor.visit_struct_decl(self)
