@@ -1,0 +1,4 @@
+int a
+struct Point:
+    int x
+exit 0

@@ -1,1 +1,1 @@
-compilation error: line 1:8: expected '=', found 's'
+compilation error: line 1:1: unknown type 'string'

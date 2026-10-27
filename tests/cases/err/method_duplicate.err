@@ -1,0 +1,1 @@
+compilation error: line 5:5: member function 'm' is already declared in struct 'S'

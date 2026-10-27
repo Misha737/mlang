@@ -22,6 +22,7 @@ class CodeGenerator:
             for struct in program.structs
         }
         self.module = ir.Module(name="mlang")
+        self.module.triple = ""
         self.struct_types = {}
         self.fn_map = {}
         self.strings = {}

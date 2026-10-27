@@ -1,0 +1,5 @@
+int twice(int n):
+    exit n + n
+
+int a = twice(4)
+exit a

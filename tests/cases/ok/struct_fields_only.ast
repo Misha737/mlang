@@ -1,0 +1,13 @@
+ProgramNode @1:1
+  structs:
+    StructDecl name='Point' @1:1
+      members:
+        FieldDecl type_name='int' is_const=False name='x' @2:5
+        FieldDecl type_name='int' is_const=False name='y' @3:5
+        FieldDecl type_name='bool' is_const=False name='flag' @4:5
+  functions:
+  statements:
+  exit:
+    ExitStmt @5:1
+      value:
+        NumberExpr text='0' @5:6

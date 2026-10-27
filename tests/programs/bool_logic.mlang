@@ -1,0 +1,11 @@
+bool t = true
+bool f = false
+print(t)
+print(f)
+print(!t)
+print(!f)
+print(t == f)
+print(t != f)
+print(3 == 3)
+print(3 != 3)
+exit 0

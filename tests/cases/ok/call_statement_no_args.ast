@@ -1,0 +1,20 @@
+ProgramNode @1:1
+  structs:
+  functions:
+    FunctionDecl return_type='int' name='run' @1:1
+      params:
+      body:
+        BlockNode @2:1
+          body:
+            ExitStmt @2:5
+              value:
+                NumberExpr text='0' @2:10
+  statements:
+    ExprStmt @4:1
+      expr:
+        CallExpr name='run' @4:1
+          args:
+  exit:
+    ExitStmt @5:1
+      value:
+        NumberExpr text='0' @5:6

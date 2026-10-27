@@ -1,0 +1,7 @@
+struct P:
+    int x
+
+P p {1}
+P q {2}
+print(p == q)
+exit 0

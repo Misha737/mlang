@@ -1,0 +1,5 @@
+int f():
+    exit g
+
+int g = 5
+exit f()

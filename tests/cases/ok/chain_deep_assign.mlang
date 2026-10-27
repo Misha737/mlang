@@ -1,0 +1,9 @@
+struct Inner:
+    int c
+
+struct Outer:
+    Inner b
+
+Outer a {{1}}
+a.b.c = 5
+exit a.b.c

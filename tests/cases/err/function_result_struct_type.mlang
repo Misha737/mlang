@@ -1,0 +1,7 @@
+struct S:
+    int v
+
+S f():
+    exit 0
+
+exit 0

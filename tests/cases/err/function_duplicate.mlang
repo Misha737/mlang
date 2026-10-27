@@ -1,0 +1,7 @@
+int f():
+    exit 1
+
+int f():
+    exit 2
+
+exit 0

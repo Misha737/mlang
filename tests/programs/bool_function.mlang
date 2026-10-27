@@ -1,0 +1,6 @@
+bool is_zero(int n):
+    exit n == 0
+
+print(is_zero(0))
+print(is_zero(5))
+exit 0

@@ -1,0 +1,9 @@
+struct Counter:
+    int value
+    int inc():
+        value = value + 1
+        exit value
+
+Counter const c {0}
+int x = c.inc()
+exit x

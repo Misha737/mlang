@@ -1,0 +1,8 @@
+struct Counter:
+    int value
+    int scaled(int k):
+        exit value * k
+
+Counter c {3}
+c.scaled(2)
+exit c.scaled(4)

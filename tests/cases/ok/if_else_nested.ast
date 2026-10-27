@@ -1,5 +1,7 @@
 ProgramNode @1:1
-  body:
+  structs:
+  functions:
+  statements:
     DeclStmt type_name='int' is_const=False name='a' @1:1
     DeclStmt type_name='int' is_const=False name='b' @2:1
     IfStmt @3:1
@@ -37,6 +39,7 @@ ProgramNode @1:1
             AssignStmt name='b' @9:2
               value:
                 NumberExpr text='5' @9:6
+  exit:
     ExitStmt @10:1
       value:
         IdentExpr name='a' @10:6

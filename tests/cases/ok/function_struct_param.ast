@@ -1,0 +1,32 @@
+ProgramNode @1:1
+  structs:
+    StructDecl name='Point' @1:1
+      members:
+        FieldDecl type_name='int' is_const=False name='x' @2:5
+        FieldDecl type_name='int' is_const=False name='y' @3:5
+  functions:
+    FunctionDecl return_type='int' name='get' @5:1
+      params:
+        ParamNode type_name='Point' name='p' @5:9
+      body:
+        BlockNode @6:1
+          body:
+            ExitStmt @6:5
+              value:
+                ChainExpr is_callable=False @6:10
+                  items:
+                    IdentExpr name='p' @6:10
+                    IdentExpr name='x' @6:12
+  statements:
+    DeclStmt type_name='Point' is_const=False name='q' @8:1
+      init:
+        InitExpr @8:9
+          values:
+            NumberExpr text='1' @8:10
+            NumberExpr text='2' @8:13
+  exit:
+    ExitStmt @9:1
+      value:
+        CallExpr name='get' @9:6
+          args:
+            IdentExpr name='q' @9:10

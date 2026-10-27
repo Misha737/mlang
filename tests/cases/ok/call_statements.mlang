@@ -1,0 +1,4 @@
+int a = 1
+f(a, 2)
+a.g().h()
+exit a

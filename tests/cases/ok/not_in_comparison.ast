@@ -1,5 +1,7 @@
 ProgramNode @1:1
-  body:
+  structs:
+  functions:
+  statements:
     DeclStmt type_name='bool' is_const=False name='b' @1:1
       init:
         BinaryExpr op='==' @1:16
@@ -9,6 +11,7 @@ ProgramNode @1:1
                 BoolExpr value=True @1:11
           right:
             BoolExpr value=False @1:19
+  exit:
     ExitStmt @2:1
       value:
         NumberExpr text='0' @2:6

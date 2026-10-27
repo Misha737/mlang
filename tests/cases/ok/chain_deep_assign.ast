@@ -1,0 +1,28 @@
+ProgramNode @1:1
+  structs:
+    StructDecl name='Inner' @1:1
+      members:
+        FieldDecl type_name='int' is_const=False name='c' @2:5
+    StructDecl name='Outer' @4:1
+      members:
+        FieldDecl type_name='Inner' is_const=False name='b' @5:5
+  functions:
+  statements:
+    DeclStmt type_name='Outer' is_const=False name='a' @7:1
+      init:
+        InitExpr @7:9
+          values:
+            InitExpr @7:10
+              values:
+                NumberExpr text='1' @7:11
+    AssignStmt name='a.b.c' @8:1
+      value:
+        NumberExpr text='5' @8:9
+  exit:
+    ExitStmt @9:1
+      value:
+        ChainExpr is_callable=False @9:6
+          items:
+            IdentExpr name='a' @9:6
+            IdentExpr name='b' @9:8
+            IdentExpr name='c' @9:10

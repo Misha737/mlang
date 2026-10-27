@@ -1,0 +1,7 @@
+struct U:
+    int const id
+    int set():
+        id = 5
+        exit id
+
+exit 0

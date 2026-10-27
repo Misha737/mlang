@@ -1,0 +1,25 @@
+ProgramNode @1:1
+  structs:
+  functions:
+    FunctionDecl return_type='int' name='add' @1:1
+      params:
+        ParamNode type_name='int' name='a' @1:9
+        ParamNode type_name='int' name='b' @1:16
+      body:
+        BlockNode @2:1
+          body:
+            ExitStmt @2:5
+              value:
+                BinaryExpr op='+' @2:12
+                  left:
+                    IdentExpr name='a' @2:10
+                  right:
+                    IdentExpr name='b' @2:14
+  statements:
+  exit:
+    ExitStmt @4:1
+      value:
+        CallExpr name='add' @4:6
+          args:
+            NumberExpr text='1' @4:10
+            NumberExpr text='2' @4:13

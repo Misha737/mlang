@@ -1,0 +1,17 @@
+struct S:
+    int v
+    int by_param(int v):
+        exit v
+    int by_local():
+        int v = 9
+        exit v
+    int by_field():
+        exit v
+
+int v = 100
+S s {1}
+print(s.by_param(7))
+print(s.by_local())
+print(s.by_field())
+print(v)
+exit 0

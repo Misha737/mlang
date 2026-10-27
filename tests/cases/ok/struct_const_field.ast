@@ -1,0 +1,12 @@
+ProgramNode @1:1
+  structs:
+    StructDecl name='Config' @1:1
+      members:
+        FieldDecl type_name='int' is_const=True name='limit' @2:5
+        FieldDecl type_name='double' is_const=True name='big' @3:5
+  functions:
+  statements:
+  exit:
+    ExitStmt @4:1
+      value:
+        NumberExpr text='0' @4:6

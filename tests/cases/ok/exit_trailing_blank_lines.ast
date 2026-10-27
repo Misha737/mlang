@@ -1,6 +1,9 @@
 ProgramNode @1:1
-  body:
+  structs:
+  functions:
+  statements:
     DeclStmt type_name='int' is_const=False name='a' @1:1
+  exit:
     ExitStmt @2:1
       value:
         IdentExpr name='a' @2:6

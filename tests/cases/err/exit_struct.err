@@ -1,0 +1,1 @@
+compilation error: line 5:1: 'exit' needs an int, double or bool value, got 'P'
