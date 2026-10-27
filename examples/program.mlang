@@ -1,6 +1,26 @@
-int a
-int b = 7
-a = 3
-if a == b:
+struct Point:
+    int x
+    int const y
+    int scaled(int k):
+        exit x * k
+
+int square(int n):
+    exit n * n
+
+int n = read()
+Point p = {3, 4}
+int total = 0
+int i = 0
+while i != n:
+    total = total + square(i)
+    i = i + 1
+if total == 0:
+    print("empty")
+else:
+    print(total)
+p.x = total
+print(p.scaled(2))
+bool ok = total != 0
+if !ok:
     exit 1
-exit a + b
+exit total + p.y
