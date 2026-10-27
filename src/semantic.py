@@ -183,8 +183,11 @@ class SemanticChecker:
         saved = self.scopes, self.current_function
         self.scopes = [{}]
         self.current_function = symbol
+        node.param_symbols = []
         for type_name, name in symbol.params:
-            self.scopes[0][name] = VarSymbol(name, type_name, False)
+            param = VarSymbol(name, type_name, False)
+            self.scopes[0][name] = param
+            node.param_symbols.append(param)
         for statement in node.body.body:
             statement.accept(self)
         if not self.terminates(node.body.body):
