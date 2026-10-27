@@ -95,6 +95,12 @@ def lex(data: bytes):
                 emit("rbracket", ')')
             elif byte == ord(','):
                 emit("coma", ',')
+            elif byte == ord('{'):
+                emit("lbrace", '{')
+            elif byte == ord('}'):
+                emit("rbrace", '}')
+            elif byte == ord('.') and tokens and tokens[-1].kind in ("ident", "rbracket"):
+                emit("dot", '.')
             elif byte == ord('"'):
                 state = "STRING"
             else:

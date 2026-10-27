@@ -166,3 +166,100 @@ class BinaryExpr(ExprNode):
         self.op = op
         self.left = left
         self.right = right
+
+
+class StringExpr(ExprNode):
+    _fields = ("text",)
+
+    def __init__(self, line, col, text):
+        super().__init__(line, col)
+        self.text = text
+
+
+class ReadExpr(ExprNode):
+    pass
+
+
+class InitExpr(ExprNode):
+    _children = ("values",)
+
+    def __init__(self, line, col, values):
+        super().__init__(line, col)
+        self.values = values
+
+
+class CallExpr(ExprNode):
+    _fields = ("name",)
+    _children = ("args",)
+
+    def __init__(self, line, col, name, args):
+        super().__init__(line, col)
+        self.name = name
+        self.args = args
+
+
+class ChainExpr(ExprNode):
+    _fields = ("is_callable",)
+    _children = ("items",)
+
+    def __init__(self, line, col, items):
+        super().__init__(line, col)
+        self.items = items
+        self.is_callable = isinstance(items[-1], CallExpr)
+
+
+class PrintStmt(StmtNode):
+    _children = ("value",)
+
+    def __init__(self, line, col, value):
+        super().__init__(line, col)
+        self.value = value
+
+
+class ExprStmt(StmtNode):
+    _children = ("expr",)
+
+    def __init__(self, line, col, expr):
+        super().__init__(line, col)
+        self.expr = expr
+
+
+class FieldDecl(ASTNode):
+    _fields = ("type_name", "is_const", "name")
+
+    def __init__(self, line, col, type_name, is_const, name):
+        super().__init__(line, col)
+        self.type_name = type_name
+        self.is_const = is_const
+        self.name = name
+
+
+class ParamNode(ASTNode):
+    _fields = ("type_name", "name")
+
+    def __init__(self, line, col, type_name, name):
+        super().__init__(line, col)
+        self.type_name = type_name
+        self.name = name
+
+
+class FunctionDecl(ASTNode):
+    _fields = ("return_type", "name")
+    _children = ("params", "body")
+
+    def __init__(self, line, col, return_type, name, params, body):
+        super().__init__(line, col)
+        self.return_type = return_type
+        self.name = name
+        self.params = params
+        self.body = body
+
+
+class StructDecl(ASTNode):
+    _fields = ("name",)
+    _children = ("members",)
+
+    def __init__(self, line, col, name, members):
+        super().__init__(line, col)
+        self.name = name
+        self.members = members
