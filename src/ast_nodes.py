@@ -42,16 +42,25 @@ class ASTNode:
                 lines.append(item.dump(indent + 2))
         return "\n".join(lines)
 
+    def accept(self, visitor):
+        raise NotImplementedError
+
     def __repr__(self):
         return self.label()
 
 
 class ProgramNode(ASTNode):
-    _children = ("body",)
+    _children = ("structs", "functions", "statements", "exit")
 
-    def __init__(self, line, col, body):
+    def __init__(self, line, col, structs, functions, statements, exit):
         super().__init__(line, col)
-        self.body = body
+        self.structs = structs
+        self.functions = functions
+        self.statements = statements
+        self.exit = exit
+
+    def accept(self, visitor):
+        return visitor.visit_program(self)
 
 
 class BlockNode(ASTNode):
@@ -60,6 +69,9 @@ class BlockNode(ASTNode):
     def __init__(self, line, col, body):
         super().__init__(line, col)
         self.body = body
+
+    def accept(self, visitor):
+        return visitor.visit_block(self)
 
 
 class StmtNode(ASTNode):
@@ -77,6 +89,10 @@ class DeclStmt(StmtNode):
         self.name = name
         self.init = init
 
+    def accept(self, visitor):
+        return visitor.visit_decl_stmt(self)
+
+
 
 class AssignStmt(StmtNode):
     _fields = ("name",)
@@ -86,6 +102,10 @@ class AssignStmt(StmtNode):
         super().__init__(line, col)
         self.name = name
         self.value = value
+
+    def accept(self, visitor):
+        return visitor.visit_assign_stmt(self)
+
 
 
 class IfStmt(StmtNode):
@@ -97,6 +117,10 @@ class IfStmt(StmtNode):
         self.then_block = then_block
         self.else_block = else_block
 
+    def accept(self, visitor):
+        return visitor.visit_if_stmt(self)
+
+
 
 class WhileStmt(StmtNode):
     _children = ("cond", "body")
@@ -106,6 +130,10 @@ class WhileStmt(StmtNode):
         self.cond = cond
         self.body = body
 
+    def accept(self, visitor):
+        return visitor.visit_while_stmt(self)
+
+
 
 class ExitStmt(StmtNode):
     _children = ("value",)
@@ -113,6 +141,10 @@ class ExitStmt(StmtNode):
     def __init__(self, line, col, value):
         super().__init__(line, col)
         self.value = value
+
+    def accept(self, visitor):
+        return visitor.visit_exit_stmt(self)
+
 
 
 class ExprNode(ASTNode):
@@ -130,6 +162,10 @@ class NumberExpr(ExprNode):
     def value(self):
         return int(self.text)
 
+    def accept(self, visitor):
+        return visitor.visit_number_expr(self)
+
+
 
 class BoolExpr(ExprNode):
     _fields = ("value",)
@@ -138,6 +174,10 @@ class BoolExpr(ExprNode):
         super().__init__(line, col)
         self.value = value
 
+    def accept(self, visitor):
+        return visitor.visit_bool_expr(self)
+
+
 
 class IdentExpr(ExprNode):
     _fields = ("name",)
@@ -145,6 +185,10 @@ class IdentExpr(ExprNode):
     def __init__(self, line, col, name):
         super().__init__(line, col)
         self.name = name
+
+    def accept(self, visitor):
+        return visitor.visit_ident_expr(self)
+
 
 
 class UnaryExpr(ExprNode):
@@ -155,6 +199,10 @@ class UnaryExpr(ExprNode):
         super().__init__(line, col)
         self.op = op
         self.operand = operand
+
+    def accept(self, visitor):
+        return visitor.visit_unary_expr(self)
+
 
 
 class BinaryExpr(ExprNode):
@@ -167,6 +215,10 @@ class BinaryExpr(ExprNode):
         self.left = left
         self.right = right
 
+    def accept(self, visitor):
+        return visitor.visit_binary_expr(self)
+
+
 
 class StringExpr(ExprNode):
     _fields = ("text",)
@@ -175,9 +227,14 @@ class StringExpr(ExprNode):
         super().__init__(line, col)
         self.text = text
 
+    def accept(self, visitor):
+        return visitor.visit_string_expr(self)
+
+
 
 class ReadExpr(ExprNode):
-    pass
+    def accept(self, visitor):
+        return visitor.visit_read_expr(self)
 
 
 class InitExpr(ExprNode):
@@ -186,6 +243,10 @@ class InitExpr(ExprNode):
     def __init__(self, line, col, values):
         super().__init__(line, col)
         self.values = values
+
+    def accept(self, visitor):
+        return visitor.visit_init_expr(self)
+
 
 
 class CallExpr(ExprNode):
@@ -197,6 +258,10 @@ class CallExpr(ExprNode):
         self.name = name
         self.args = args
 
+    def accept(self, visitor):
+        return visitor.visit_call_expr(self)
+
+
 
 class ChainExpr(ExprNode):
     _fields = ("is_callable",)
@@ -207,6 +272,10 @@ class ChainExpr(ExprNode):
         self.items = items
         self.is_callable = isinstance(items[-1], CallExpr)
 
+    def accept(self, visitor):
+        return visitor.visit_chain_expr(self)
+
+
 
 class PrintStmt(StmtNode):
     _children = ("value",)
@@ -215,6 +284,10 @@ class PrintStmt(StmtNode):
         super().__init__(line, col)
         self.value = value
 
+    def accept(self, visitor):
+        return visitor.visit_print_stmt(self)
+
+
 
 class ExprStmt(StmtNode):
     _children = ("expr",)
@@ -222,6 +295,10 @@ class ExprStmt(StmtNode):
     def __init__(self, line, col, expr):
         super().__init__(line, col)
         self.expr = expr
+
+    def accept(self, visitor):
+        return visitor.visit_expr_stmt(self)
+
 
 
 class FieldDecl(ASTNode):
@@ -233,6 +310,10 @@ class FieldDecl(ASTNode):
         self.is_const = is_const
         self.name = name
 
+    def accept(self, visitor):
+        return visitor.visit_field_decl(self)
+
+
 
 class ParamNode(ASTNode):
     _fields = ("type_name", "name")
@@ -241,6 +322,10 @@ class ParamNode(ASTNode):
         super().__init__(line, col)
         self.type_name = type_name
         self.name = name
+
+    def accept(self, visitor):
+        return visitor.visit_param(self)
+
 
 
 class FunctionDecl(ASTNode):
@@ -254,6 +339,10 @@ class FunctionDecl(ASTNode):
         self.params = params
         self.body = body
 
+    def accept(self, visitor):
+        return visitor.visit_function_decl(self)
+
+
 
 class StructDecl(ASTNode):
     _fields = ("name",)
@@ -263,3 +352,6 @@ class StructDecl(ASTNode):
         super().__init__(line, col)
         self.name = name
         self.members = members
+
+    def accept(self, visitor):
+        return visitor.visit_struct_decl(self)

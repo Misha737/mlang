@@ -43,25 +43,27 @@ class Parser:
 
     def parse_program(self):
         first = self.peek()
-        body = []
+        structs = []
+        functions = []
+        statements = []
         while self.is_token("keyword", "struct"):
-            body.append(self.parse_struct())
+            structs.append(self.parse_struct())
         while self.is_function_start():
-            body.append(self.parse_function())
+            functions.append(self.parse_function())
         while True:
             if self.is_token("EOF"):
                 self.error("expected 'exit', found end of file")
             if self.is_token("INDENT"):
                 self.error("unexpected indentation")
             if self.is_token("keyword", "exit"):
-                body.append(self.parse_exit(require_nl=False))
+                exit = self.parse_exit(require_nl=False)
                 break
-            body.append(self.parse_statement())
+            statements.append(self.parse_statement())
         if self.is_token("NL"):
             self.eat()
         if not self.is_token("EOF"):
             self.error(f"unexpected {describe(self.peek())} after 'exit'")
-        return ProgramNode(first.line, first.col, body)
+        return ProgramNode(first.line, first.col, structs, functions, statements, exit)
 
     def parse_statement(self):
         token = self.peek()
