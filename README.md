@@ -565,6 +565,34 @@ Without the flag, `main` calls `@"ml.area"`, which has its own `alloca` slots, s
 
 Tests: `tests/opt/inline_names` (the program above, with names that collide), `tests/opt/inline_shapes` (the call on its own, on the right side of an assignment, in `print` inside an `if`, and an argument that is read from input) and `tests/opt/inline_left_alone` (an `exit` inside an `if`, a recursive function, a function called twice, and a call inside a bigger expression: nothing is inlined).
 
+## The real program: ATM
+
+`programs/atm.mlang` is an interactive ATM that a person can use from the terminal.
+
+- It prints a prompt before every input and reads a command number: `1` deposit, `2` withdraw, `3` show the balance, `4` print a report, `0` quit. Deposit and withdraw then ask for an amount; any other command prints `Unknown command`.
+- The money lives in the struct `Account`. Its fields `balance` and `operations` are **private**, so the statements of the program can only go through the public member functions `deposit`, `withdraw`, `show` and `report`; writing `acc.balance` there is a compile error.
+- Encapsulation also keeps the rules in one place: the private member function `can_afford` decides whether a withdrawal is allowed, and the private `record` counts the operations. Only `deposit` and `withdraw` call them.
+- The language has no `<` or `>`, so the global function `less` compares two numbers with `is_negative`, which counts up and down from zero until it meets the number. `valid` rejects negative amounts (`Invalid amount`).
+- It uses a struct with member functions, global functions (`is_negative`, `less`, `valid`), `read`, `print`, loops and `if`, and the private members.
+
+To build the native binary and run it (`llc` and `clang` are installed in Environment setup):
+
+```bash
+python3 src/compiler.py programs/atm.mlang atm.ll
+llc -filetype=obj -relocation-model=pic atm.ll -o atm.o
+clang -fPIE atm.o -o atm
+./atm
+```
+
+Two sessions are recorded. `programs/atm_1.in` is what the user types and `programs/atm_1.expected` is the exact output, prompts included; `atm_2` is the same for the second session. Each session is run with:
+
+```bash
+./atm < programs/atm_1.in | diff - programs/atm_1.expected
+./atm < programs/atm_2.in | diff - programs/atm_2.expected
+```
+
+`diff` prints nothing when the output is exactly the expected one. The first session deposits, withdraws more than the balance, and enters negative amounts and an unknown command; the second starts with an empty account, withdraws the whole balance, and deposits `0`. Building with `python3 src/compiler.py --optimize ...` gives the same output.
+
 ## Running the tests
 
 Install `pytest`:
@@ -579,12 +607,13 @@ Run the suite from the repository root:
 python3 -m pytest tests/
 ```
 
-There are four groups of tests:
+There are five groups of tests:
 
 - `tests/cases/ok`: a valid program and the abstract syntax tree the parser must print for it (`--ast`).
 - `tests/cases/err`: an invalid program and the one-line error the compiler must print. These run the whole compiler, so syntax and semantic errors are both covered. Each one is run twice, plain and with `--optimize`, and must give the same error.
 - `tests/programs`: complete programs. Each one is compiled to LLVM IR, run with `lli`, and its standard output and exit status are compared with `<name>.out` and `<name>.exit` (0 if absent); `<name>.in` is fed to standard input. These tests are skipped when `lli` is not installed. Each program is run twice, plain and with `--optimize`, and must give the same result.
 - `tests/opt`: programs for the optimizer. Each has the tree expected after `--optimize --ast` (`<name>.ast`) and is run plain and with `--optimize` like `tests/programs`.
+- `programs/*.in` with `programs/*.expected`: the recorded sessions of the real program. The program is compiled, built into a native binary with `llc` and `clang` when both are installed (otherwise run with `lli`), fed the `.in` file, and its output is compared with the `.expected` file. Each session runs plain and with `--optimize`. These tests are skipped when none of the tools is installed.
 
 To run every case with a per-case report that lists the failures:
 

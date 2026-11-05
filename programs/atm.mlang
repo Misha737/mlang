@@ -1,0 +1,89 @@
+struct Account:
+    int const number
+    private int balance
+    private int operations
+    private bool can_afford(int amount):
+        exit !less(balance, amount)
+    private int record():
+        operations = operations + 1
+        exit operations
+    int deposit(int amount):
+        balance = balance + amount
+        record()
+        exit balance
+    bool withdraw(int amount):
+        if can_afford(amount):
+            balance = balance - amount
+            record()
+            exit true
+        exit false
+    int show():
+        print("Balance:")
+        print(balance)
+        exit balance
+    int report():
+        print("Account number:")
+        print(number)
+        print("Balance:")
+        print(balance)
+        print("Operations:")
+        print(operations)
+        exit operations
+
+bool is_negative(int n):
+    int up = 0
+    int down = 0
+    while true:
+        if up == n:
+            exit false
+        if down == n:
+            exit true
+        up = up + 1
+        down = down - 1
+    exit false
+
+bool less(int a, int b):
+    exit is_negative(a - b)
+
+bool valid(int amount):
+    exit !is_negative(amount)
+
+Account acc {1001, 0, 0}
+print("ATM simulator")
+print("Commands: 1 deposit, 2 withdraw, 3 balance, 4 report, 0 quit")
+int running = 1
+while running != 0:
+    print("Command:")
+    int command = read()
+    if command == 0:
+        running = 0
+        print("Goodbye")
+    else:
+        if command == 1:
+            print("Amount to deposit:")
+            int amount = read()
+            if valid(amount):
+                acc.deposit(amount)
+                print("Deposited")
+            else:
+                print("Invalid amount")
+        else:
+            if command == 2:
+                print("Amount to withdraw:")
+                int wanted = read()
+                if valid(wanted):
+                    if acc.withdraw(wanted):
+                        print("Withdrawn")
+                    else:
+                        print("Not enough money")
+                else:
+                    print("Invalid amount")
+            else:
+                if command == 3:
+                    acc.show()
+                else:
+                    if command == 4:
+                        acc.report()
+                    else:
+                        print("Unknown command")
+exit 0

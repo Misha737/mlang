@@ -2,7 +2,7 @@ import subprocess
 import sys
 
 from cases import COMPILER, collect, check_ok, check_err
-from programs import LLI, PROGRAMS, collect_programs, check_program
+from programs import CAN_RUN_SESSIONS, LLI, PROGRAMS, check_program, check_session, collect_programs, collect_sessions
 
 OPT = PROGRAMS.parent / "opt"
 
@@ -52,6 +52,17 @@ def main():
             total += 1
             name = f"opt/{source.stem}" + (" --optimize" if optimize else "")
             problems = check_program(source, optimize=optimize)
+            print(f"{'FAIL' if problems else 'ok  '} {name}")
+            if problems:
+                failed.append((name, problems))
+
+    if not CAN_RUN_SESSIONS:
+        print("sessions: skipped, neither llc with clang nor lli is installed")
+    for session in collect_sessions() if CAN_RUN_SESSIONS else []:
+        for optimize in (False, True):
+            total += 1
+            name = f"sessions/{session.stem}" + (" --optimize" if optimize else "")
+            problems = check_session(session, optimize=optimize)
             print(f"{'FAIL' if problems else 'ok  '} {name}")
             if problems:
                 failed.append((name, problems))

@@ -1,0 +1,35 @@
+ATM simulator
+Commands: 1 deposit, 2 withdraw, 3 balance, 4 report, 0 quit
+Command:
+Balance:
+0
+Command:
+Amount to withdraw:
+Not enough money
+Command:
+Amount to deposit:
+Deposited
+Command:
+Amount to deposit:
+Deposited
+Command:
+Amount to withdraw:
+Withdrawn
+Command:
+Balance:
+0
+Command:
+Amount to withdraw:
+Not enough money
+Command:
+Amount to deposit:
+Deposited
+Command:
+Account number:
+1001
+Balance:
+0
+Operations:
+4
+Command:
+Goodbye
