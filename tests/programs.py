@@ -18,11 +18,12 @@ def read_bytes(path: Path, default: bytes = b"") -> bytes:
     return path.read_bytes().replace(b"\r\n", b"\n") if path.exists() else default
 
 
-def check_program(source: Path):
+def check_program(source: Path, optimize=False):
     with tempfile.TemporaryDirectory() as tmp:
         ir_path = Path(tmp) / f"{source.stem}.ll"
+        flags = ["--optimize"] if optimize else []
         compiled = subprocess.run(
-            [sys.executable, str(COMPILER), str(source), str(ir_path)],
+            [sys.executable, str(COMPILER), *flags, str(source), str(ir_path)],
             capture_output=True,
             text=True,
         )

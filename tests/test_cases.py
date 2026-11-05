@@ -9,7 +9,8 @@ def test_valid_program(source):
     assert not problems, "\n".join(problems)
 
 
+@pytest.mark.parametrize("optimize", [False, True], ids=["plain", "optimized"])
 @pytest.mark.parametrize("source", collect("err"), ids=lambda p: p.stem)
-def test_invalid_program(source):
-    problems = check_err(source)
+def test_invalid_program(source, optimize):
+    problems = check_err(source, optimize=optimize)
     assert not problems, "\n".join(problems)

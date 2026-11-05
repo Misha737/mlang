@@ -1,0 +1,18 @@
+int shown(int n):
+    print(n)
+    exit n + 1
+
+int scale(int k):
+    int r = k * 10
+    exit r
+
+int total(int a, int b):
+    exit a + b
+
+int x = read()
+int y = 0
+y = scale(x)
+shown(y)
+if y == 70:
+    print(total(y, 1))
+exit 0

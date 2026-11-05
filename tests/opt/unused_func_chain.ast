@@ -1,0 +1,31 @@
+ProgramNode @1:1
+  structs:
+  functions:
+    FunctionDecl return_type='int' name='used' is_private=False @10:1
+      params:
+        ParamNode type_name='int' name='n' @10:10
+      body:
+        BlockNode @11:1
+          body:
+            ExitStmt @11:5
+              value:
+                BinaryExpr op='+' @11:12
+                  left:
+                    IdentExpr name='n' @11:10
+                  right:
+                    NumberExpr text='10' @11:14
+  statements:
+    PrintStmt @13:1
+      value:
+        CallExpr name='used' @13:7
+          args:
+            NumberExpr text='5' @13:12
+    PrintStmt @14:1
+      value:
+        CallExpr name='used' @14:7
+          args:
+            NumberExpr text='6' @14:12
+  exit:
+    ExitStmt @15:1
+      value:
+        NumberExpr text='0' @15:6

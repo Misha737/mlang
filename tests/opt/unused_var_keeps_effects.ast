@@ -1,0 +1,56 @@
+ProgramNode @1:1
+  structs:
+  functions:
+    FunctionDecl return_type='int' name='twice' is_private=False @1:1
+      params:
+        ParamNode type_name='int' name='n' @1:11
+      body:
+        BlockNode @2:1
+          body:
+            PrintStmt @2:5
+              value:
+                IdentExpr name='n' @2:11
+            ExitStmt @3:5
+              value:
+                BinaryExpr op='*' @3:12
+                  left:
+                    IdentExpr name='n' @3:10
+                  right:
+                    NumberExpr text='2' @3:14
+  statements:
+    ExprStmt @5:9
+      expr:
+        ReadExpr @5:9
+    ExprStmt @6:9
+      expr:
+        CallExpr name='twice' @6:9
+          args:
+            NumberExpr text='4' @6:15
+    DeclStmt type_name='int' is_const=False name='z' @7:1
+      init:
+        NumberExpr text='3' @7:9
+    IfStmt @8:1
+      cond:
+        BinaryExpr op='==' @8:6
+          left:
+            IdentExpr name='z' @8:4
+          right:
+            NumberExpr text='3' @8:9
+      then_block:
+        BlockNode @9:1
+          body:
+            PrintStmt @10:5
+              value:
+                NumberExpr text='1' @10:11
+    PrintStmt @11:1
+      value:
+        IdentExpr name='z' @11:7
+    PrintStmt @12:1
+      value:
+        CallExpr name='twice' @12:7
+          args:
+            NumberExpr text='1' @12:13
+  exit:
+    ExitStmt @13:1
+      value:
+        NumberExpr text='0' @13:6

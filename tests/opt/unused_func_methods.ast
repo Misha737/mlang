@@ -1,0 +1,88 @@
+ProgramNode @1:1
+  structs:
+    StructDecl name='Counter' @1:1
+      members:
+        FieldDecl type_name='int' is_const=False name='value' is_private=False @2:5
+        FunctionDecl return_type='int' name='step' is_private=False @3:5
+          params:
+          body:
+            BlockNode @4:1
+              body:
+                ExitStmt @4:9
+                  value:
+                    BinaryExpr op='+' @4:20
+                      left:
+                        IdentExpr name='value' @4:14
+                      right:
+                        NumberExpr text='1' @4:22
+        FunctionDecl return_type='int' name='bump' is_private=False @5:5
+          params:
+          body:
+            BlockNode @6:1
+              body:
+                AssignStmt name='value' @6:9
+                  value:
+                    BinaryExpr op='+' @6:23
+                      left:
+                        IdentExpr name='value' @6:17
+                      right:
+                        CallExpr name='step' @6:25
+                          args:
+                ExitStmt @7:9
+                  value:
+                    IdentExpr name='value' @7:14
+  functions:
+    FunctionDecl return_type='int' name='sum_to' is_private=False @18:1
+      params:
+        ParamNode type_name='int' name='n' @18:12
+      body:
+        BlockNode @19:1
+          body:
+            IfStmt @19:5
+              cond:
+                BinaryExpr op='==' @19:10
+                  left:
+                    IdentExpr name='n' @19:8
+                  right:
+                    NumberExpr text='0' @19:13
+              then_block:
+                BlockNode @20:1
+                  body:
+                    ExitStmt @20:9
+                      value:
+                        NumberExpr text='0' @20:14
+            ExitStmt @21:5
+              value:
+                BinaryExpr op='+' @21:12
+                  left:
+                    IdentExpr name='n' @21:10
+                  right:
+                    CallExpr name='sum_to' @21:14
+                      args:
+                        BinaryExpr op='-' @21:23
+                          left:
+                            IdentExpr name='n' @21:21
+                          right:
+                            NumberExpr text='1' @21:25
+  statements:
+    DeclStmt type_name='Counter' is_const=False name='c' @23:1
+      init:
+        InitExpr @23:11
+          values:
+            NumberExpr text='0' @23:12
+    PrintStmt @24:1
+      value:
+        ChainExpr is_callable=True @24:7
+          items:
+            IdentExpr name='c' @24:7
+            CallExpr name='bump' @24:9
+              args:
+    PrintStmt @25:1
+      value:
+        CallExpr name='sum_to' @25:7
+          args:
+            NumberExpr text='4' @25:14
+  exit:
+    ExitStmt @26:1
+      value:
+        NumberExpr text='0' @26:6

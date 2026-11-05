@@ -1,0 +1,9 @@
+int area(int w, int h):
+    int result = w * h
+    exit result + 1
+
+int w = 3
+int n = 4
+int result = area(w, n)
+print(result)
+exit 0

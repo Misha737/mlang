@@ -471,6 +471,100 @@ clang -fPIE output.o -o program
 ./program
 ```
 
+## Optimizer
+
+`--optimize`, anywhere on the command line, runs the optimizer on the checked tree before code generation. The optimizer keeps what the program prints, reads and returns; it only changes how. With `--ast` the tree is printed after the optimizer, and the semantic checker has run first, so a semantic error is reported as usual.
+
+```bash
+python3 src/compiler.py --optimize input.mlang output.ll
+python3 src/compiler.py --optimize --ast input.mlang
+```
+
+The optimizer is a list of passes in `src/optimizer.py`: unused variables, unused functions, inlining. Each pass is repeated until it changes nothing, and the whole list is repeated until no pass changes anything, because one pass can give work to another (inlining leaves a function nobody calls, and its parameters may then be unread).
+
+### Unused variables
+
+A variable that is declared and never read is removed together with its declaration and all of its assignments. Removing it can leave another variable unread, so the pass repeats: in `int a = 5`, `int b = a + 1`, `int c = b * 2`, first `c` goes, then `b`, then `a`.
+
+- **What is a read.** Any use of the variable inside an expression: an initializer, the right side of an assignment, a condition, an argument, `print`, `exit`, the object in `p.x` or `p.f()`. The target of an assignment (`d = 7`, `p.x = 7`) is not a read. A member function call on an object is a read of the object.
+- **Scopes and shadowing.** Reads are counted per declaration, not per name. An inner `int z` that nobody reads is removed even when an outer `z` with the same name is read.
+- **What is never removed.** Parameters and the fields of a struct. Fields are not variables, and a function may read them.
+- **Expressions with effects are never dropped.** When the value of a removed declaration or assignment contains a call, `read()`, or an `+`, `-` or `*` that is checked at run time (its operands are not known at compile time, so it may print `runtime error: integer overflow` and stop the program), the expression stays as a statement of its own, in the original order. Only the variable is removed: `int x = read()` becomes `read()`, and `int m = n + 1` becomes `n + 1`. An expression whose operands are constants is checked at compile time and is dropped.
+- **A variable that reads itself stays.** `x = x + 1` reads `x`, so a variable that is only updated from its own value is not removed.
+
+Tests: `tests/opt/unused_var_cascade` (the chain above, with an assignment to a removed variable) and `tests/opt/unused_var_keeps_effects` (`read()` and a call whose result is unused, and an unused inner variable that hides a used outer one). Each has the expected tree after `--optimize --ast` (`.ast`) and the expected output (`.out`, `.in`); the output is the same with and without the flag. `tests/programs` are also run with `--optimize` and must give the same output.
+
+### Unused functions
+
+A function that nobody calls is removed with its whole body, and then the pass looks again: the body that went may have been the only caller of another function. In `tests/opt/unused_func_chain`, `a` calls `b`, `b` calls `c`, and only `used` is called from the program: `a` goes first, then `b`, then `c`.
+
+- **What is a call.** Any call that the checker resolved to the function: `f(x)`, `p.m()`, and a bare `m()` inside a member function. Calls are counted in the statements of the program and in the bodies of the functions that are still there, so a call inside a body that has just been removed no longer counts in the next round.
+- **Member functions too.** The program is not a library: only `main` is called from outside, so a member function nobody calls is removed in the same way, public or private. The fields of its struct stay.
+- **A function that calls only itself.** A call from a function to itself does not count. A recursive function that nobody else calls is removed.
+- **Mutual recursion stays.** If `a` calls `b` and `b` calls `a`, and nobody else calls either, each has a caller, so neither is removed. This is the same limit as reference counting.
+- **A removed function has no effect on the output:** it was never run.
+
+Tests: `tests/opt/unused_func_chain` (the chain above; `used` is called twice, so it is not inlined) and `tests/opt/unused_func_methods` (an unused member function that is the only caller of another member function, a recursive function that only calls itself, and a recursive function and two member functions that stay because they are called).
+
+### Inlining
+
+A function that is called exactly once is replaced at its call site by its body, and the function is removed.
+
+- **Which functions.** A global function that is called exactly once in the whole program, does not call itself, and whose body is a straight line: any statements, ending with one `exit`, and no other `exit` anywhere in it, not even inside an `if` or a `while`. Member functions are not inlined.
+- **Which call sites.** The call must be the whole value of a statement: the initializer of a declaration, the right side of an assignment, the argument of `print`, the value of `exit`, or a statement on its own. The statements of the body are put before that statement, in the same block, so the order in which things happen does not change: the arguments are evaluated first, then the body, then the statement. A call nested in a bigger expression (`1 + f(x)`), or in the condition of an `if` or `while`, is left alone. A call that is an argument of another call (`f(g(x))`) is inlined in the next round: once `f` is inlined, `g(x)` is the initializer of the parameter of `f`.
+- **What happens.** Each parameter becomes a declaration initialised with the argument, in order. The statements of the body follow. The `exit` of the body is dropped and its value stands where the call stood. For a call on its own, the value is kept only when it has an effect (a call, `read()`, or `+ - *` checked at run time), as in unused variables.
+- **Names.** Every parameter and every variable declared in the body is renamed to `function_name`, for example `area_w`, with a number added if that name is already taken anywhere in the program. Nothing in the body can collide with a name of the caller, which is also why `w` and `result` of the caller and of `area` below stay apart.
+- **Left alone.** A function that is called twice or never (never means it is removed as unused), a recursive function, a function with an `exit` inside an `if` or a `while`, a member function, and a call that is not the whole value of a statement.
+
+```
+int area(int w, int h):
+    int result = w * h
+    exit result + 1
+
+int w = 3
+int n = 4
+int result = area(w, n)
+print(result)
+exit 0
+```
+
+With `--optimize --ast` the statements of the program are `w`, `n`, then `area_w = w`, `area_h = n`, `area_result = area_w * area_h`, `result = area_result + 1`, and `print(result)`; `area` is gone.
+
+**IR before and after.** The start of `area`, the call to it in `main`, and the same place in `main` with `--optimize`; `; ...` marks lines left out.
+
+Without `--optimize`:
+
+```
+define i32 @"ml.area"(i32 %".1", i32 %".2")
+body:
+  store i32 %".1", i32* %".4"
+  store i32 %".2", i32* %".6"
+  ; ...
+; in main
+  %".7" = load i32, i32* %".2"
+  %".8" = load i32, i32* %".4"
+  %".9" = call i32 @"ml.area"(i32 %".7", i32 %".8")
+  store i32 %".9", i32* %".6"
+```
+
+With `--optimize` (there is no `ml.area` any more):
+
+```
+; in main
+  %".7" = load i32, i32* %".2"
+  store i32 %".7", i32* %".6"
+  %".10" = load i32, i32* %".4"
+  store i32 %".10", i32* %".9"
+  %".13" = load i32, i32* %".6"
+  %".14" = load i32, i32* %".9"
+  %".15" = call {i32, i1} @"llvm.smul.with.overflow.i32"(i32 %".13", i32 %".14")
+  ; ...
+```
+
+Without the flag, `main` calls `@"ml.area"`, which has its own `alloca` slots, stores its two parameters into them, and returns the result in a register. With the flag there is no `call` and no `ml.area` (`%".6"` and `%".9"` are the new slots of `area_w` and `area_h`): the two argument values are stored straight into the new slots of `main`, and the multiplication and the addition run inline, so the overflow checks stay and the output is the same.
+
+Tests: `tests/opt/inline_names` (the program above, with names that collide), `tests/opt/inline_shapes` (the call on its own, on the right side of an assignment, in `print` inside an `if`, and an argument that is read from input) and `tests/opt/inline_left_alone` (an `exit` inside an `if`, a recursive function, a function called twice, and a call inside a bigger expression: nothing is inlined).
+
 ## Running the tests
 
 Install `pytest`:
@@ -485,11 +579,12 @@ Run the suite from the repository root:
 python3 -m pytest tests/
 ```
 
-There are three groups of tests:
+There are four groups of tests:
 
 - `tests/cases/ok`: a valid program and the abstract syntax tree the parser must print for it (`--ast`).
-- `tests/cases/err`: an invalid program and the one-line error the compiler must print. These run the whole compiler, so syntax and semantic errors are both covered.
-- `tests/programs`: complete programs. Each one is compiled to LLVM IR, run with `lli`, and its standard output and exit status are compared with `<name>.out` and `<name>.exit` (0 if absent); `<name>.in` is fed to standard input. These tests are skipped when `lli` is not installed.
+- `tests/cases/err`: an invalid program and the one-line error the compiler must print. These run the whole compiler, so syntax and semantic errors are both covered. Each one is run twice, plain and with `--optimize`, and must give the same error.
+- `tests/programs`: complete programs. Each one is compiled to LLVM IR, run with `lli`, and its standard output and exit status are compared with `<name>.out` and `<name>.exit` (0 if absent); `<name>.in` is fed to standard input. These tests are skipped when `lli` is not installed. Each program is run twice, plain and with `--optimize`, and must give the same result.
+- `tests/opt`: programs for the optimizer. Each has the tree expected after `--optimize --ast` (`<name>.ast`) and is run plain and with `--optimize` like `tests/programs`.
 
 To run every case with a per-case report that lists the failures:
 
