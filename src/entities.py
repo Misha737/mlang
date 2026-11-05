@@ -25,6 +25,8 @@ KEYWORDS = {
     b"struct": "keyword",
     b"print": "keyword",
     b"read": "keyword",
+    b"private": "keyword",
+    b"public": "keyword",
 }
 
 ARITHMETIC_OPERATORS = ["+", "-", "*"]

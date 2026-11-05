@@ -304,11 +304,12 @@ class ExprStmt(StmtNode):
 class FieldDecl(ASTNode):
     _fields = ("type_name", "is_const", "name")
 
-    def __init__(self, line, col, type_name, is_const, name):
+    def __init__(self, line, col, type_name, is_const, name, is_private=False):
         super().__init__(line, col)
         self.type_name = type_name
         self.is_const = is_const
         self.name = name
+        self.is_private = is_private
 
     def accept(self, visitor):
         return visitor.visit_field_decl(self)
@@ -332,12 +333,13 @@ class FunctionDecl(ASTNode):
     _fields = ("return_type", "name")
     _children = ("params", "body")
 
-    def __init__(self, line, col, return_type, name, params, body):
+    def __init__(self, line, col, return_type, name, params, body, is_private=False):
         super().__init__(line, col)
         self.return_type = return_type
         self.name = name
         self.params = params
         self.body = body
+        self.is_private = is_private
 
     def accept(self, visitor):
         return visitor.visit_function_decl(self)

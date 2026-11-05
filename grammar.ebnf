@@ -1,6 +1,7 @@
 program     ::= { struct } { function } { statement } exit
 statement   ::= ( decl | assign | if | while | print NL | chain NL )
-struct      ::= "struct" ident ":" NL INDENT ( field_decl | function ) { ( field_decl | function ) } DEDENT
+struct      ::= "struct" ident ":" NL INDENT field { field } DEDENT
+field       ::= [ ( "private" | "public" ) ] ( field_decl | function )
 field_decl  ::= type [ "const" ] ident NL
 init        ::= "{" value { "," value } "}"
 value       ::= expr | init
