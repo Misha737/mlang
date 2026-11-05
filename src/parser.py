@@ -231,14 +231,20 @@ class Parser:
         self.eat()
         members = []
         while not self.is_token("DEDENT"):
+            is_private = self.parse_access()
             if self.is_function_start():
-                members.append(self.parse_function())
+                members.append(self.parse_function(is_private))
             else:
-                members.append(self.parse_field_decl())
+                members.append(self.parse_field_decl(is_private))
         self.eat()
         return StructDecl(keyword.line, keyword.col, name.text, members)
 
-    def parse_field_decl(self):
+    def parse_access(self):
+        if self.is_token("keyword", "private") or self.is_token("keyword", "public"):
+            return self.eat().text == "private"
+        return False
+
+    def parse_field_decl(self, is_private=False):
         type_token = self.parse_type()
         is_const = False
         if self.is_token("keyword", "const"):
@@ -246,9 +252,9 @@ class Parser:
             is_const = True
         name = self.expect("ident", what="identifier")
         self.expect("NL", what="end of line")
-        return FieldDecl(type_token.line, type_token.col, type_token.text, is_const, name.text)
+        return FieldDecl(type_token.line, type_token.col, type_token.text, is_const, name.text, is_private)
 
-    def parse_function(self):
+    def parse_function(self, is_private=False):
         type_token = self.parse_type()
         name = self.expect("ident", what="identifier")
         self.expect("lbracket", "(")
@@ -262,7 +268,7 @@ class Parser:
         self.expect("colon", ":")
         self.expect("NL", what="end of line")
         body = self.parse_block()
-        return FunctionDecl(type_token.line, type_token.col, type_token.text, name.text, params, body)
+        return FunctionDecl(type_token.line, type_token.col, type_token.text, name.text, params, body, is_private)
 
     def parse_param(self):
         type_token = self.parse_type()

@@ -302,7 +302,7 @@ class ExprStmt(StmtNode):
 
 
 class FieldDecl(ASTNode):
-    _fields = ("type_name", "is_const", "name")
+    _fields = ("type_name", "is_const", "name", "is_private")
 
     def __init__(self, line, col, type_name, is_const, name, is_private=False):
         super().__init__(line, col)
@@ -330,7 +330,7 @@ class ParamNode(ASTNode):
 
 
 class FunctionDecl(ASTNode):
-    _fields = ("return_type", "name")
+    _fields = ("return_type", "name", "is_private")
     _children = ("params", "body")
 
     def __init__(self, line, col, return_type, name, params, body, is_private=False):

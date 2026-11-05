@@ -30,21 +30,23 @@ class VarSymbol:
 
 
 class FieldSymbol:
-    def __init__(self, name, type_name, is_const, index, struct_name):
+    def __init__(self, name, type_name, is_const, index, struct_name, is_private=False):
         self.name = name
         self.type = type_name
         self.is_const = is_const
         self.index = index
         self.struct_name = struct_name
+        self.is_private = is_private
 
 
 class FunctionSymbol:
-    def __init__(self, name, params, return_type, node, struct_name=None):
+    def __init__(self, name, params, return_type, node, struct_name=None, is_private=False):
         self.name = name
         self.params = params
         self.return_type = return_type
         self.node = node
         self.struct_name = struct_name
+        self.is_private = is_private
         self.mutates = False
 
     @property
@@ -119,7 +121,7 @@ class SemanticChecker:
             if field.name in struct.field_map:
                 raise error_at(field, f"field '{field.name}' is already declared in struct '{node.name}'")
             self.require_type(field, field.type_name)
-            symbol = FieldSymbol(field.name, field.type_name, field.is_const, len(struct.fields), node.name)
+            symbol = FieldSymbol(field.name, field.type_name, field.is_const, len(struct.fields), node.name, field.is_private)
             struct.fields.append(symbol)
             struct.field_map[field.name] = symbol
         for method in node.methods:
@@ -165,7 +167,7 @@ class SemanticChecker:
                 raise error_at(param, f"parameter '{param.name}' is already declared")
             seen.add(param.name)
             params.append((param.type_name, param.name))
-        symbol = FunctionSymbol(node.name, params, node.return_type, node, struct_name)
+        symbol = FunctionSymbol(node.name, params, node.return_type, node, struct_name, node.is_private)
         node.symbol = symbol
         return symbol
 
@@ -406,6 +408,7 @@ class SemanticChecker:
                 method = struct.methods.get(item.name)
                 if method is None:
                     raise error_at(item, f"struct '{type_name}' has no member function '{item.name}'")
+                self.check_access(item, method, "member function")
                 self.check_call_args(item, method)
                 self.call_sites.append(CallSite(item, method, self.current_function if self.current_struct else None, const_by, from_self))
                 type_name = self.typed(item, method.return_type)
@@ -448,7 +451,13 @@ class SemanticChecker:
         field = struct.field_map.get(field_name)
         if field is None:
             raise error_at(node, f"struct '{type_name}' has no field '{field_name}'")
+        self.check_access(node, field, "field")
         return field
+
+    def check_access(self, node, member, kind):
+        if member.is_private and (self.current_struct is None or self.current_struct.name != member.struct_name):
+            action = "call" if kind == "member function" else "access"
+            raise error_at(node, f"cannot {action} private {kind} '{member.name}' of struct '{member.struct_name}'")
 
     def check_call_args(self, node: CallExpr, function: FunctionSymbol):
         node.symbol = function

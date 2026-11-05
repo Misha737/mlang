@@ -1,7 +1,7 @@
 ProgramNode @1:1
   structs:
   functions:
-    FunctionDecl return_type='int' name='f' @1:1
+    FunctionDecl return_type='int' name='f' is_private=False @1:1
       params:
         ParamNode type_name='int' name='n' @1:7
       body:

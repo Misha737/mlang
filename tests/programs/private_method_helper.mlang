@@ -1,0 +1,15 @@
+struct Temperature:
+    int celsius
+    private int twice(int v):
+        exit v * 2
+    private int to_f(int c):
+        exit twice(c) + 32
+    public int fahrenheit():
+        exit to_f(celsius)
+    int shown():
+        exit fahrenheit()
+
+Temperature t {20}
+print(t.fahrenheit())
+print(t.shown())
+exit 0

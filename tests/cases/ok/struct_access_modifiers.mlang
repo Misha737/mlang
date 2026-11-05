@@ -1,0 +1,13 @@
+struct Account:
+    private int balance
+    public int const id
+    int owner
+    private int audit():
+        exit balance
+    public int total():
+        exit balance + owner
+    int shown():
+        exit audit()
+
+Account a {1, 2, 3}
+exit a.total()

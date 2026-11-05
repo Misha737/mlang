@@ -35,7 +35,7 @@ Follows: `struct_and_functions`, `exit_expression`. Breaks: `struct_after_statem
 - One statement per line; the end of a line ends the statement. Blank lines are ignored.
 - Blocks are made of indentation: 4 spaces or one tab per level. A block is a line that ends with `:` followed by more deeply indented lines.
 - Identifiers: letters, digits and `_`, not starting with a digit. Names are case-sensitive.
-- Keywords: `int double bool const exit true false if else while struct print read`.
+- Keywords: `int double bool const exit true false if else while struct print read private public`.
 - A string literal is `"` followed by any bytes except `"` and a newline, followed by `"`. There are no escape sequences. A string literal is allowed only as the argument of `print`.
 - A `.` is allowed only right after an identifier or `)`.
 
@@ -301,6 +301,79 @@ Follows: `name_lookup_order`. Breaks: `function_cannot_see_global`, `field_not_v
 **Rule: constant objects.** A member function that assigns a field of its own object, or calls another member function that does, is a changing function. A changing function cannot be called on a `const` object, or on an object reached through a `const` object or a `const` field. A member function that only reads fields can be called on a `const` object.
 
 Follows: `const_object_rules`. Breaks: `mutating_method_on_const_object`, `mutating_method_in_expression_on_const`, `mutating_method_through_const_field`, `indirect_mutating_method_on_const`.
+
+### Encapsulation
+
+A field or a member function of a struct is `public` or `private`. The word stands first on the member's line, before the type: `private int const id`, `private int helper():`. **A member without the word is `public`**, so every program that was valid before this feature means the same as before.
+
+**Rule: who may name a private member.** A private member can be named only inside the member functions of the struct that declares it. Everything else is outside: the statements of the program, global functions, and member functions of other structs. Outside, reading a private field, assigning it, or calling a private member function is an error that names the member. The rule is about the type, not the object: a member function of `Point` may use the private fields of any `Point`, for example of a local one. A chain `a.b.c` is checked link by link against the struct that declares each field, so a struct that has a `Point` field cannot reach a private field of that `Point` through it.
+
+**Rule: inside the struct.** A bare name or a bare call inside a member function always looks into its own struct, so its private fields and private member functions can be used freely.
+
+**Rule: objects and `print`.** `{...}` gives a value to every field, private ones too: the language has no constructors, so `{...}` is the only way to make an object, and `private int const` is a value that is set once and read only by the member functions. `print` writes every field, private ones included: it is a dump of the object, not a use of a field by name.
+
+**Rule: private and constant.** The two rules are independent. When both forbid a use, the private error is reported.
+
+`private` exists only in the checker. The layout of the struct and the generated IR are the same as for `public`.
+
+```
+struct Account:
+    private int balance
+    int owner
+    int deposit(int amount):
+        balance = balance + amount
+        exit balance
+
+Account a {100, 7}
+print(a.deposit(50))
+print(a.owner)
+print(a.balance)
+exit 0
+```
+
+The last `print` is an error: `compilation error: line 11:9: cannot access private field 'balance' of struct 'Account'`. Without it the program prints `150` and `7`.
+
+```
+struct Temperature:
+    int celsius
+    private int twice(int v):
+        exit v * 2
+    private int to_f(int c):
+        exit twice(c) + 32
+    int fahrenheit():
+        exit to_f(celsius)
+
+Temperature t {20}
+print(t.fahrenheit())
+```
+
+This prints `72`. `t.to_f(20)` in the last line would be an error: `cannot call private member function 'to_f' of struct 'Temperature'`.
+
+Follows: `private_field_access`, `private_method_helper`, `private_const_field`, `struct_access_modifiers` (parse only). Breaks: `private_field_read`, `private_field_assign`, `private_method_call`, `private_field_other_struct`.
+
+**IR of a private field.** This is the output of `python3 src/compiler.py` for a shorter `Account` than the one above: only `private int balance` and `deposit`, and `Account a {100}` followed by `print(a.deposit(50))`. `; ...` marks lines left out.
+
+```
+%"struct.Account" = type {i32}
+define i32 @"ml.Account.deposit"(%"struct.Account"* %".1", i32 %".2")
+body:
+  store i32 %".2", i32* %".4"
+  %".6" = getelementptr %"struct.Account", %"struct.Account"* %".1", i32 0, i32 0
+  %".7" = getelementptr %"struct.Account", %"struct.Account"* %".1", i32 0, i32 0
+  %".8" = load i32, i32* %".7"
+  %".9" = load i32, i32* %".4"
+  %".10" = call {i32, i1} @"llvm.sadd.with.overflow.i32"(i32 %".8", i32 %".9")
+  ; ...
+ok:
+  store i32 %".11", i32* %".6"
+  ; ...
+; in main
+  %".2" = alloca %"struct.Account"
+  store i32 100, i32* %".3"
+  %".5" = call i32 @"ml.Account.deposit"(%"struct.Account"* %".2", i32 50)
+```
+
+The struct type `{i32}` keeps `balance` as one unnamed field with no visibility, so `private` leaves no trace: the IR of this program is identical, line for line, to the IR of the same program with the word removed. Inside `deposit` the object comes in as a pointer, the hidden first parameter `%".1"`, and `balance` is written and read through `getelementptr ... i32 0, i32 0` on it, the same instructions a public field would produce. In `main` the call passes the address of the object, not a copy, so `deposit` changes the caller's `a`; the access check was done earlier, in the checker, which is why no instruction guards the private field.
 
 ### Output and input
 

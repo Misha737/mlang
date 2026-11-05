@@ -2,10 +2,10 @@ ProgramNode @1:1
   structs:
     StructDecl name='Point' @1:1
       members:
-        FieldDecl type_name='int' is_const=False name='x' @2:5
-        FieldDecl type_name='int' is_const=False name='y' @3:5
+        FieldDecl type_name='int' is_const=False name='x' is_private=False @2:5
+        FieldDecl type_name='int' is_const=False name='y' is_private=False @3:5
   functions:
-    FunctionDecl return_type='int' name='get' @5:1
+    FunctionDecl return_type='int' name='get' is_private=False @5:1
       params:
         ParamNode type_name='Point' name='p' @5:9
       body:
