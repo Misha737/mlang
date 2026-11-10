@@ -42,7 +42,7 @@ def parse_args():
     parser.add_argument("-a", "--ast", action="store_true")
     parser.add_argument("-t", "--tokens", action="store_true")
     parser.add_argument("--optimize", action="store_true")
-    return parser.parse_args()
+    return parser.parse_intermixed_args()
 
 def read_source(source_path):
     with open(source_path, "rb") as file:
