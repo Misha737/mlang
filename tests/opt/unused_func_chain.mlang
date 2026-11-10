@@ -1,0 +1,15 @@
+int c():
+    exit 3
+
+int b():
+    exit c() + 1
+
+int a():
+    exit b() * 2
+
+int used(int n):
+    exit n + 10
+
+print(used(5))
+print(used(6))
+exit 0

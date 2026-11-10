@@ -1,0 +1,3 @@
+struct Point:
+    int
+exit 0

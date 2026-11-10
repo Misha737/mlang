@@ -1,0 +1,11 @@
+int power(int base, int exp):
+    int result = 1
+    int i = 0
+    while i != exp:
+        result = result * base
+        i = i + 1
+    exit result
+
+print(power(2, 10))
+print(power(3, 4))
+exit 0

@@ -1,0 +1,63 @@
+ProgramNode @1:1
+  structs:
+  functions:
+  statements:
+    DeclStmt type_name='int' is_const=False name='x' @12:1
+      init:
+        ReadExpr @12:9
+    DeclStmt type_name='int' is_const=False name='y' @13:1
+      init:
+        NumberExpr text='0' @13:9
+    DeclStmt type_name='int' is_const=False name='scale_k' @5:11
+      init:
+        IdentExpr name='x' @14:11
+    DeclStmt type_name='int' is_const=False name='scale_r' @6:5
+      init:
+        BinaryExpr op='*' @6:15
+          left:
+            IdentExpr name='scale_k' @6:13
+          right:
+            NumberExpr text='10' @6:17
+    AssignStmt name='y' @14:1
+      value:
+        IdentExpr name='scale_r' @7:10
+    DeclStmt type_name='int' is_const=False name='shown_n' @1:11
+      init:
+        IdentExpr name='y' @15:7
+    PrintStmt @2:5
+      value:
+        IdentExpr name='shown_n' @2:11
+    ExprStmt @3:12
+      expr:
+        BinaryExpr op='+' @3:12
+          left:
+            IdentExpr name='shown_n' @3:10
+          right:
+            NumberExpr text='1' @3:14
+    IfStmt @16:1
+      cond:
+        BinaryExpr op='==' @16:6
+          left:
+            IdentExpr name='y' @16:4
+          right:
+            NumberExpr text='70' @16:9
+      then_block:
+        BlockNode @17:1
+          body:
+            DeclStmt type_name='int' is_const=False name='total_a' @9:11
+              init:
+                IdentExpr name='y' @17:17
+            DeclStmt type_name='int' is_const=False name='total_b' @9:18
+              init:
+                NumberExpr text='1' @17:20
+            PrintStmt @17:5
+              value:
+                BinaryExpr op='+' @10:12
+                  left:
+                    IdentExpr name='total_a' @10:10
+                  right:
+                    IdentExpr name='total_b' @10:14
+  exit:
+    ExitStmt @18:1
+      value:
+        NumberExpr text='0' @18:6

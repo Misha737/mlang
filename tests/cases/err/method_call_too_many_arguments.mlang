@@ -1,0 +1,8 @@
+struct Counter:
+    int value
+    int get():
+        exit value
+
+Counter c {0}
+int x = c.get(1)
+exit x

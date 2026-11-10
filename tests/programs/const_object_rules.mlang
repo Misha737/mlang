@@ -1,0 +1,15 @@
+struct U:
+    int const id
+    int age
+    int get_id():
+        exit id
+    int birthday():
+        age = age + 1
+        exit age
+
+U const c {1, 30}
+U u {2, 40}
+print(c.get_id())
+print(c.age)
+print(u.birthday())
+exit 0

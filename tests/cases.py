@@ -1,5 +1,6 @@
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -11,12 +12,26 @@ def collect(kind: str):
     return sorted(CASES.joinpath(kind).glob("*.mlang"))
 
 
-def run_compiler(source: Path):
-    return subprocess.run(
-        [sys.executable, str(COMPILER), "--ast", str(source)],
-        capture_output=True,
-        text=True,
-    )
+def run_compiler(source: Path, ast=True, optimize=False):
+    if optimize and not ast:
+        with tempfile.TemporaryDirectory() as tmp:
+            return subprocess.run(
+                [sys.executable, str(COMPILER), "--optimize", str(source), str(Path(tmp) / "out.ll")],
+                capture_output=True,
+                text=True,
+            )
+    if ast:
+        return subprocess.run(
+            [sys.executable, str(COMPILER), "--ast", str(source)],
+            capture_output=True,
+            text=True,
+        )
+    with tempfile.TemporaryDirectory() as tmp:
+        return subprocess.run(
+            [sys.executable, str(COMPILER), str(source), str(Path(tmp) / "out.ll")],
+            capture_output=True,
+            text=True,
+        )
 
 
 def check_ok(source: Path):
@@ -32,9 +47,9 @@ def check_ok(source: Path):
     return problems
 
 
-def check_err(source: Path):
+def check_err(source: Path, optimize=False):
     expected = source.with_suffix(".err").read_text().rstrip("\n")
-    result = run_compiler(source)
+    result = run_compiler(source, ast=False, optimize=optimize)
     problems = []
     if result.returncode == 0:
         problems.append("exit code 0, expected non-zero")

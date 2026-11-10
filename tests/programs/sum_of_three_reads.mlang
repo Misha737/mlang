@@ -1,0 +1,5 @@
+int a = read()
+int b = read()
+int c = read()
+print(a + b + c)
+exit 0

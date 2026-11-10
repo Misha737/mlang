@@ -1,0 +1,6 @@
+int f(int a):
+    exit a
+
+double big = 5000000000
+int x = f(big)
+exit x

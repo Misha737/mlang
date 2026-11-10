@@ -1,0 +1,5 @@
+int f():
+    double big = 5000000000
+    exit big
+
+exit f()

@@ -1,0 +1,8 @@
+int a = 5
+int b = a + 1
+int c = b * 2
+int d = 1
+d = 7
+int shown = 10
+print(shown)
+exit 0

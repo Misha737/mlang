@@ -1,0 +1,22 @@
+int sign(int n):
+    if n == 0:
+        exit 0
+    exit 1
+
+int fact(int n):
+    if n == 0:
+        exit 1
+    exit n * fact(n - 1)
+
+int twice(int n):
+    exit n * 2
+
+int inc(int n):
+    exit n + 1
+
+print(sign(5))
+print(fact(4))
+print(twice(2))
+print(twice(3))
+print(1 + inc(4))
+exit 0

@@ -1,5 +1,8 @@
 ProgramNode @1:1
-  body:
+  structs:
+  functions:
+  statements:
+  exit:
     ExitStmt @1:1
       value:
         UnaryExpr op='!' @1:6

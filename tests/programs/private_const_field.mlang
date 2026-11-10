@@ -1,0 +1,11 @@
+struct Ticket:
+    private int const number
+    int seats
+    int label():
+        exit number * 100 + seats
+
+Ticket t {7, 3}
+print(t.label())
+print(t)
+print(t.seats)
+exit 0

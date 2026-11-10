@@ -1,0 +1,4 @@
+struct Config:
+    int const limit
+    double const big
+exit 0

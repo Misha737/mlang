@@ -1,0 +1,5 @@
+int f(int a):
+    exit a
+
+print(a)
+exit 0

@@ -1,0 +1,7 @@
+struct User:
+    int const id
+    int age
+
+User u {1, 30}
+u.id = 2
+exit 0

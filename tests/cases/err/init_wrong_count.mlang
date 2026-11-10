@@ -1,0 +1,6 @@
+struct P:
+    int x
+    int y
+
+P p {1}
+exit 0

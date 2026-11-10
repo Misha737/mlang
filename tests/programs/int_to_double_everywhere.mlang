@@ -1,0 +1,16 @@
+struct S:
+    double d
+
+double f(double a):
+    exit a
+
+double g():
+    exit 1
+
+S s {3}
+double x = 4
+print(f(3))
+print(g())
+print(s)
+print(x)
+exit 0

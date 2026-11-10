@@ -1,0 +1,14 @@
+ProgramNode @1:1
+  structs:
+  functions:
+  statements:
+    DeclStmt type_name='int' is_const=False name='shown' @6:1
+      init:
+        NumberExpr text='10' @6:13
+    PrintStmt @7:1
+      value:
+        IdentExpr name='shown' @7:7
+  exit:
+    ExitStmt @8:1
+      value:
+        NumberExpr text='0' @8:6

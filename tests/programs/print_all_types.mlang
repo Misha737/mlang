@@ -1,0 +1,17 @@
+struct P:
+    int x
+
+struct S:
+    int a
+    double b
+    bool c
+    P p
+
+S s {1, 5000000000, true, {7}}
+print("start")
+print(1)
+print(5000000000)
+print(false)
+print(s)
+print(s.p)
+exit 0

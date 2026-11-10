@@ -1,0 +1,7 @@
+struct Point:
+    private int x
+    int y
+
+Point p {1, 2}
+p.x = 5
+exit 0

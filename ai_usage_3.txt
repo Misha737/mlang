@@ -1,0 +1,202 @@
+- I used artificial intelligence to explain the theory of the parser, practical tasks, and asked for advice on implementation.
+- I used AI as a tutor in Python. I asked questions about methods and what they do.
+- AI was also used as an analyzer of potential errors in my code. I gave it my code and asked it to find weak spots and potential bugs.
+- AI was also used to implement some methods (more details below).
+- AI was also used to build tests (valid and fail) using pytest
+- AI was also used to write README.md
+
+AI tools:
+    Claude, Claude Code
+
+In general, the AI ​​performed the tasks as I wanted. The last stage had a problem that it did extra work, went beyond the work area.
+This time it was not like that. I gave it clearer boundaries of work.
+
+For example, when I did encapsulation and asked Claude to write fields for AST nodes. He wrote only for the field, ignoring the function node.
+I had to add it manually (it was faster than asking Claude)
+
+All other parts of the work the AI ​​did as I wanted and asked.
+
+AI chat:
+
+В lex.py та entities.py додай додай два нові ключові слова.
+
+Зміна зроблена лише в entities.py: у словник KEYWORDS додано b"private" і b"public".
+
+У lexer.py нічого міняти не довелося, тому я його не чіпав. Стан IDENT у ньому вже викликає KEYWORDS.get(word, "ident"), тож нові слова підхоплюються автоматично.
+
+Перевірка через --tokens на тестовому файлі:
+
+private і public тепер мають вигляд keyword;
+private_x лишається ident, бо слово має збігатися повністю;
+pytest дав 189 passed, 31 skipped, тож старі тести не зламались.
+
+Парсер поки що не знає про модифікатори. Програма з private int x у структурі наразі дасть помилку «expected type, found ‘private’», доки не зробимо наступний крок (ітерація 4, пункт 2). Нічого не закомічено.
+
+додай is_private поле у вузол для поля структури
+
+Я додав is_private у FieldDecl (ast_nodes.py). Це необов'язковий параметр конструктора зі значенням False, який зберігається як self.is_private.
+
+Парсер викликає FieldDecl із п'ятьма аргументами, тож без змін усе працює як раніше. Тести я після цієї правки не запускав. Те саме поле потрібне ще й у FunctionDecl, для приватних методів.
+
+Зараз твоє завдання оновити методи у parse_struct: parse_function, parse_field_decl. Всі його members повинні присвоювати поле is_private відповідно до токена private або public. Якщо токена немає, автоматично is_private=False. Тобто поле або метод публічний
+
+Шукав код, відредаговано parser.py
+Перевіряю: прапорці у дереві та тести.
+
+Checked parsed access flags and ran tests
+Я оновив parser.py: тепер parse_struct читає модифікатор доступу перед кожним членом структури.
+
+parse_access() — новий допоміжний метод. Якщо наступний токен private, він з'їдає його й повертає True. Якщо public, з'їдає й повертає False. Якщо модифікатора немає, нічого не з'їдає й повертає False.
+parse_struct викликає parse_access() на початку кожної ітерації, до перевірки is_function_start(). Це важливо: інакше private не розпізнався б як початок типу.
+parse_field_decl(is_private=False) і parse_function(is_private=False) отримали новий параметр із дефолтом False і передають його у FieldDecl і FunctionDecl. Верхньорівневі функції викликають parse_function() без аргументу, тож лишаються публічними.
+Я помітив, що FunctionDecl у ast_nodes.py уже має is_private (ви додали його самі), тож його я не чіпав.
+
+Перевірка на прикладі структури з шістьма членами:
+
+private int x → True;
+public int y, int z, int g() і public int f() → False;
+private int h(int k) → True.
+Помилки поводяться як очікувалося: private без нічого далі дає expected type, found end of line, а private перед верхньорівневою функцією дає unexpected 'private', expected a statement.
+
+Прапорець поки ніде не використовується: FieldSymbol і FunctionSymbol його ще не отримують, а перевірки доступу в checker'і немає. Також --ast ще не друкує його, тож приватне й публічне поле в дереві виглядають однаково. Це дві наступні частини плану.
+
+А тепер до _fields додай is_private та друкуй в ast (через прапорецю --ast в cli). Тести теж зміни щоб вони працювали
+
+Прочитав і відредаговано ast_nodes.py
+Тепер оновлюю golden-файли текстовою заміною, щоб потім незалежно звірити їх із реальним виводом компілятора.
+
+--ast тепер показує is_private для полів і функцій.
+
+ast_nodes.py: "is_private" додано до _fields у FieldDecl і FunctionDecl. Рядок виглядає так: FieldDecl type_name='int' is_const=False name='x' is_private=True @2:13.
+20 golden .ast файлів у tests/cases/ok: кожен рядок FieldDecl і FunctionDecl отримав  is_private=False перед позицією. Це текстова заміна, а не перегенерація, тож тест справді звіряє парсер зі старими очікуваннями. Інших змін у цих файлах немає.
+Новий тест struct_access_modifiers (.mlang і .ast у tests/cases/ok):
+містить private, public і поля та методи без модифікатора;
+.ast я згенерував компілятором і перевірив очима, що прапорці збігаються з вихідним кодом (приватні balance і audit мають True, решта False).
+Результат: 190 passed, 31 skipped. Раніше було 189 passed, 31 skipped, тобто додався один новий тест. Skipped були й до змін.
+Позиція вузла (@2:13) лишається на токені типу, а не на private. Тому стовпці в старих файлах не змінилися.
+
+Те, що верхньорівневі функції теж друкують is_private=False, — побічний ефект (вони теж FunctionDecl). Для них це завжди False.
+
+Передай прапорець із вузлів у FieldSymbol та FunctionSymbol. За замовчування він False.
+У visit_struct_decl, де створюється FieldSymbol для поля, передай field.is_private.
+У make_signature, де створюється FunctionSymbol, передай node.is_private. Цей метод викликається і для звичайних функцій верхнього рівня (там значення буде False), і для методів структур; змін для цих двох випадків не треба.
+
+Прапорець is_private тепер доходить з AST до символів. Усі зміни в semantic.py: 6 доданих і 4 змінених рядки.
+
+FieldSymbol і FunctionSymbol: у конструкторах новий останній параметр is_private=False, який зберігається як self.is_private.
+visit_struct_decl: FieldSymbol створюється з field.is_private.
+make_signature: FunctionSymbol створюється з node.is_private. Цей метод обслуговує і методи структур, і глобальні функції. Для глобальних функцій значення завжди False, окремого коду для них не потрібно.
+generator.py я не чіпав. Його виклик FieldSymbol(...) із п'ятьма аргументами працює завдяки значенню за замовчуванням, і git diff підтверджує, що змінився лише semantic.py.
+
+Перевірка на структурі з приватним полем і приватним методом:
+
+поля: x → True, y → False;
+методи: h → True, g → False;
+глобальна функція f → False;
+повний набір тестів: 190 passed, 31 skipped.
+Прапорець поки ніде не читається, тож поведінка компілятора не змінилась. Наступний крок — сама перевірка доступу: допоміжна функція, яку викликають у find_field і в гілці методу в visit_chain_expr.
+
+Додай в семантику допоміжну функцію, яка буде перевіряти доступ до члена. Вона отримує вузол (для позиції), символ члена й вид: поле чи метод)
+Умова: член приватний і (current_struct порожній або current_struct.name != member.struct_name).
+Викликай нову функцію find_field та у гілці CallExpr у visit_chain_expr, після того як метод знайдено в struct.methods
+
+Також задокументуй, додай 3 валідні й 3 невалідні тести з іменами, пов'язаними з фічею (наприклад private_field_read, private_method_call),
+У файлі README, один уривок з IR, який створює ваш компілятор — від десяти до двадцяти рядків виводу.ll
+— з трьома реченнями про те, що робить кожна частина: таблиця вказівників функцій та непрямий виклик, два екземпляри з їхніми іменами, зворотний край циклу, структура, яка зберігає стан корутини.
+Конструктор пише IR; уривок показує, що ви можете його прочитати.
+
+Завершив завдання у фоновому режимі: 1, виконано 6 команд, відредаговано semantic.py, 2 невдалі
+Тести написано і перевірено: три валідні програми дають очікуваний вивід, чотири невалідні дають очікувані помилки. Далі перевірю IR для README, чи не лишає private слідів, і перегляну граматику.
+
+Виконано 2 команди
+Правило «приватність на рівні типу» підтверджено (метод Point читає приватне поле локального Point). Тепер README.
+
+Завершив завдання у фоновому режимі: 1, відредаговано README.md, виконано 1 команду, 2 невдалі
+Рядок у README треба виправити на 11:9, а ще уточнити, з якої версії прикладу взято IR (у ньому лише поле balance).
+
+Відредаговано README.md, виконано 1 команду
+Перевірка доступу до приватних членів працює, тести написано, а README доповнено розділом Encapsulation з IR-уривком. Весь набір проходить: 194 passed, 34 skipped.
+
+Код
+У semantic.py з'явилася функція check_access(node, member, kind). Вона кидає помилку, якщо член приватний і current_struct порожній або його ім'я не збігається з власником. Викликається в двох місцях:
+
+у find_field: це покриває читання через ланцюжок і присвоєння;
+у гілці CallExpr у visit_chain_expr, після того як метод знайдено в struct.methods.
+Повідомлення мають такий вигляд:
+
+cannot access private field 'x' of struct 'Point';
+cannot call private member function 'secret' of struct 'Point'.
+Тести
+Я додав 3 валідні й 4 невалідні (специфікація вимагає щонайменше 3 і 3). Четвертий невалідний, private_field_assign, перевіряє присвоєння, яке йде іншим шляхом, ніж читання.
+
+Валідні (tests/programs, програма компілюється, запускається й порівнюється з .out): private_field_access, private_method_helper, private_const_field.
+Невалідні (tests/cases/err): private_field_read, private_field_assign, private_method_call, private_field_other_struct.
+У .err файлах записано точні позиції, які я звірив з кодом вручну (наприклад 6:9 для читання й 6:1 для присвоєння).
+
+Є застереження щодо перевірки: lli у вас на Windows немає, тому 3 нові програмні тести в pytest пропускаються. Я запустив їх окремо через llvmlite JIT і переконався, що вивід збігається з .out. Остаточно їх підтвердить запуск у вашому Ubuntu-середовищі.
+
+README
+Розділ Encapsulation містить:
+
+правила: дефолт public, приватність на рівні типу, перевірка ланцюжка по ланках, {...} і print, взаємодія з const;
+два приклади програм. Я запустив обидва: вони дають 150, 7 і 72, а помилки збігаються з описаними (з 11:9, а не 10:9, який я спершу помилково написав);
+IR-уривок на 16 рядків із трьома реченнями пояснення.
+IR-уривок я не виписав вручну, а взяв із виводу компілятора. Ще я порівняв IR програми з private і з тією самою без нього: вони ідентичні, і це тепер записано в README.
+
+Створи новий файл src/optimizer.py з функцією optimize(tree), яка запускає паси по черзі
+remove_unused_variables, повторюється, доки за прохід нічого не видалено
+додай прапорець --optimize
+в tets/opt додай 2 програмами, назви починай з unused_var_
+короткий розділ Optimizer, підрозділ Unused variables в редмі
+
+Створено 2 файли, відредаговано 2 файли, виконано 4 команди
+Знайшов реальну проблему: оптимізатор видаляв int m = n + 1 з невикористаним m, і програма перестала падати з переповненням. Арифметику з перевіркою переповнення треба зберегти, бо вона має побічний ефект.
+
+Відредаговано 4 файли, виконано 4 команди
+Оптимізатор unused variables готовий і працює. Повний набір дає 196 passed, 72 skipped. Пропущені всі програмні тести (їх запускає lli), бо lli на Windows немає.
+
+Що зроблено
+src/optimizer.py (новий файл):
+optimize(tree) проходить список пасів і повторює кожен, поки він щось видаляє. Зараз пас один: remove_unused_variables.
+Читання рахуються за ідентичністю символу, тому тіні й області видимості враховуються автоматично. Ціль присвоєння читанням не є.
+Параметри функцій і поля структур не видаляються.
+src/compiler.py: прапорець --optimize, який можна ставити будь-де в командному рядку.
+Без прапорця --ast працює як раніше (дерево до checker'а), тож 20+ golden-файлів лишились недоторканими.
+З прапорцем: lex, parse, check, optimize, потім друк дерева або генерація.
+Тести tests/opt: програми unused_var_cascade і unused_var_keeps_effects, кожна з .ast, .out (і .in, де потрібно).
+Тест-ранери: новий tests/test_opt.py, test_programs.py і run_tests.py тепер запускають кожну програму двічі (plain і --optimize). Це не було у вашому списку, але без нього очікувані .ast ніхто б не перевіряв.
+README: розділ Optimizer з підрозділом Unused variables, плюс оновлений опис груп тестів.
+Знахідка під час перевірки
+Спочатку оптимізатор видаляв int m = n + 1 з невикористаним m. Тест runtime_overflow показав, що це змінює поведінку: програма переставала падати з runtime error: integer overflow. Арифметика + - *, перевірка якої відбувається під час виконання, теж є побічним ефектом. Тепер такий вираз лишається окремим statement'ом (як read() чи виклик). Вираз із константами перевіряється на етапі компіляції, тому його можна відкинути. Це записано в README.
+
+Перевірка
+Оскільки lli у мене немає, я порівняв вивід і код виходу plain проти --optimize через llvmlite JIT на 36 програмах (tests/programs і tests/opt): 0 розбіжностей. Також вивід збігається з .out. У вашій VM запустіть:
+
+python3 tests/run_tests.py
+Мають з'явитись рядки ok   programs/... --optimize і ok   opt/... --optimize.
+
+додай remove_unused_functions(tree) у src/optimizer.py, доданий у PASSES ПІСЛЯ remove_unused_variables. Він повертає True, якщо щось видалив
+Додай тести в tests/opt. назви починай з unused_func_
+у розділі Optimizer додай підрозділ Unused functions
+
+Відредаговано 2 файли, виконано 3 команди
+Абзац про тести unused variables опинився після нового підрозділу. Переставляю його на своє місце.
+
+Виконано 2 команди
+Пас unused functions додано й працює. Увесь набір проходить (198 passed, 76 skipped). Пропущені програмні тести, бо в мене немає lli, у вашій VM вони мають запуститись.
+
+Що зроблено
+src/optimizer.py: функція remove_unused_functions(tree) стоїть у PASSES після remove_unused_variables і повертає True, якщо щось видалила.
+Виклики рахуються за CallExpr.symbol у statement'ах програми та в тілах функцій, що ще лишились.
+Виклик функції самої себе не рахується, тому рекурсивна функція, яку викликає лише вона, видаляється.
+Видаляються і глобальні функції, і методи (з StructDecl.members, поля лишаються).
+Кожен прохід перераховує виклики з нуля, тому каскад працює.
+Тести tests/opt (кожен з .mlang, .ast, .out):
+unused_func_chain: a викликає b, b викликає c, ззовні їх ніхто не викликає. Лишається тільки used, за три проходи.
+unused_func_methods: метод unused_total (єдиний викликач методу helper) зникає разом з helper. Рекурсивна fact, яку викликає лише вона сама, зникає. Методи step і bump та рекурсивна sum_to лишаються. Дерева я перевірив очима: лишились саме ці функції.
+README: підрозділ Unused functions: що вважається викликом, методи теж видаляються, самовиклик не рахується, взаємна рекурсія лишається (межа), порядок пасів. Я також переставив абзац «Tests» про unused variables на його місце, бо при вставці він опинився під новим підрозділом.
+Перевірка
+Вивід і код виходу plain проти --optimize я порівняв через llvmlite JIT на 38 програмах: 0 розбіжностей. У вашій VM:
+
+python3 tests/run_tests.py
+Мають бути рядки ok   opt/unused_func_chain, ok   opt/unused_func_methods і all N passed.

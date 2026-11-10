@@ -1,0 +1,9 @@
+struct Point:
+    int x
+    int y
+
+int get(Point p):
+    exit p.x
+
+Point q {1, 2}
+exit get(q)

@@ -1,0 +1,11 @@
+struct Point:
+    private int x
+    int y
+
+struct Line:
+    Point from
+    int length():
+        exit from.x
+
+Line l {{1, 2}}
+exit 0

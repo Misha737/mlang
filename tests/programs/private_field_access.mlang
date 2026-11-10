@@ -1,0 +1,14 @@
+struct Account:
+    private int balance
+    int owner
+    int deposit(int amount):
+        balance = balance + amount
+        exit balance
+    int get():
+        exit balance
+
+Account a {100, 7}
+print(a.deposit(50))
+print(a.get())
+print(a.owner)
+exit 0

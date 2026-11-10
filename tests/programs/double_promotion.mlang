@@ -1,0 +1,7 @@
+double big = 5000000000
+double total = big * 2 + 1
+print(total)
+int small = 7
+double mixed = small + big
+print(mixed)
+exit 0

@@ -1,0 +1,11 @@
+struct Point:
+    int x
+    int y
+
+struct Line:
+    Point from
+    Point to
+
+Line const l {{1, 2}, {3, 4}}
+l.to.y = 9
+exit 0

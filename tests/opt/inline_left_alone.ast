@@ -1,0 +1,117 @@
+ProgramNode @1:1
+  structs:
+  functions:
+    FunctionDecl return_type='int' name='sign' is_private=False @1:1
+      params:
+        ParamNode type_name='int' name='n' @1:10
+      body:
+        BlockNode @2:1
+          body:
+            IfStmt @2:5
+              cond:
+                BinaryExpr op='==' @2:10
+                  left:
+                    IdentExpr name='n' @2:8
+                  right:
+                    NumberExpr text='0' @2:13
+              then_block:
+                BlockNode @3:1
+                  body:
+                    ExitStmt @3:9
+                      value:
+                        NumberExpr text='0' @3:14
+            ExitStmt @4:5
+              value:
+                NumberExpr text='1' @4:10
+    FunctionDecl return_type='int' name='fact' is_private=False @6:1
+      params:
+        ParamNode type_name='int' name='n' @6:10
+      body:
+        BlockNode @7:1
+          body:
+            IfStmt @7:5
+              cond:
+                BinaryExpr op='==' @7:10
+                  left:
+                    IdentExpr name='n' @7:8
+                  right:
+                    NumberExpr text='0' @7:13
+              then_block:
+                BlockNode @8:1
+                  body:
+                    ExitStmt @8:9
+                      value:
+                        NumberExpr text='1' @8:14
+            ExitStmt @9:5
+              value:
+                BinaryExpr op='*' @9:12
+                  left:
+                    IdentExpr name='n' @9:10
+                  right:
+                    CallExpr name='fact' @9:14
+                      args:
+                        BinaryExpr op='-' @9:21
+                          left:
+                            IdentExpr name='n' @9:19
+                          right:
+                            NumberExpr text='1' @9:23
+    FunctionDecl return_type='int' name='twice' is_private=False @11:1
+      params:
+        ParamNode type_name='int' name='n' @11:11
+      body:
+        BlockNode @12:1
+          body:
+            ExitStmt @12:5
+              value:
+                BinaryExpr op='*' @12:12
+                  left:
+                    IdentExpr name='n' @12:10
+                  right:
+                    NumberExpr text='2' @12:14
+    FunctionDecl return_type='int' name='inc' is_private=False @14:1
+      params:
+        ParamNode type_name='int' name='n' @14:9
+      body:
+        BlockNode @15:1
+          body:
+            ExitStmt @15:5
+              value:
+                BinaryExpr op='+' @15:12
+                  left:
+                    IdentExpr name='n' @15:10
+                  right:
+                    NumberExpr text='1' @15:14
+  statements:
+    PrintStmt @17:1
+      value:
+        CallExpr name='sign' @17:7
+          args:
+            NumberExpr text='5' @17:12
+    PrintStmt @18:1
+      value:
+        CallExpr name='fact' @18:7
+          args:
+            NumberExpr text='4' @18:12
+    PrintStmt @19:1
+      value:
+        CallExpr name='twice' @19:7
+          args:
+            NumberExpr text='2' @19:13
+    PrintStmt @20:1
+      value:
+        CallExpr name='twice' @20:7
+          args:
+            NumberExpr text='3' @20:13
+    PrintStmt @21:1
+      value:
+        BinaryExpr op='+' @21:9
+          left:
+            NumberExpr text='1' @21:7
+          right:
+            CallExpr name='inc' @21:11
+              args:
+                NumberExpr text='4' @21:15
+  exit:
+    ExitStmt @22:1
+      value:
+        NumberExpr text='0' @22:6

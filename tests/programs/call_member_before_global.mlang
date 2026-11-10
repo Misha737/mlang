@@ -1,0 +1,14 @@
+struct S:
+    int v
+    int get():
+        exit v
+    int test():
+        exit get()
+
+int get():
+    exit 100
+
+S s {1}
+print(s.test())
+print(get())
+exit 0

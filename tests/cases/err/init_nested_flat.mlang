@@ -1,0 +1,8 @@
+struct P:
+    int x
+
+struct L:
+    P a
+
+L l {1}
+exit 0

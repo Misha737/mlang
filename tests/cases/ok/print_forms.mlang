@@ -1,0 +1,6 @@
+int a = 1
+print("hello, world")
+print("")
+print(a + 2)
+print(!true)
+exit 0

@@ -1,0 +1,12 @@
+struct Point:
+    int x
+    int const y
+    int scaled(int k):
+        exit x * k
+
+int square(int n):
+    exit n * n
+
+Point p {3, 4}
+p.x = square(2)
+exit p.y

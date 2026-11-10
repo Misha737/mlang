@@ -1,0 +1,10 @@
+int a = read()
+int b = read()
+if a == b:
+    print("equal")
+else:
+    if a == 0:
+        print("a is zero")
+    else:
+        print("different")
+exit 0

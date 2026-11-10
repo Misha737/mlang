@@ -1,11 +1,14 @@
 ProgramNode @1:1
-  body:
+  structs:
+  functions:
+  statements:
     DeclStmt type_name='int' is_const=True name='k' @1:1
       init:
         NumberExpr text='4' @1:15
     DeclStmt type_name='bool' is_const=True name='t' @2:1
       init:
         BoolExpr value=True @2:16
+  exit:
     ExitStmt @3:1
       value:
         IdentExpr name='k' @3:6

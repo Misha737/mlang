@@ -1,0 +1,7 @@
+struct Point:
+    int x
+    int y
+
+Point const p {1, 2}
+p.x = 5
+exit 0

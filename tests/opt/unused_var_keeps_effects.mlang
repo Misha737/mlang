@@ -1,0 +1,13 @@
+int twice(int n):
+    print(n)
+    exit n * 2
+
+int x = read()
+int y = twice(4)
+int z = 3
+if z == 3:
+    int z = 9
+    print(1)
+print(z)
+print(twice(1))
+exit 0

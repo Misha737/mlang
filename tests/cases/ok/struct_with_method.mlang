@@ -1,0 +1,5 @@
+struct Counter:
+    int value
+    int get():
+        exit value
+exit 0

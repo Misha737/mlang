@@ -1,0 +1,2 @@
+int a = "x"
+exit 0

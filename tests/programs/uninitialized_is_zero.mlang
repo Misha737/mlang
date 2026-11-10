@@ -1,0 +1,7 @@
+int a
+bool b
+double d
+print(a)
+print(b)
+print(d)
+exit 0

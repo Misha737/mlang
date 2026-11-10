@@ -1,0 +1,5 @@
+int f(int a):
+    exit a
+
+int x = f(true)
+exit x

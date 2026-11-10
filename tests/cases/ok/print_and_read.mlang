@@ -1,0 +1,4 @@
+int n = read()
+print("n is")
+print(n + 1)
+exit n

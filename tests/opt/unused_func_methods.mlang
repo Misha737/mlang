@@ -1,0 +1,26 @@
+struct Counter:
+    int value
+    int step():
+        exit value + 1
+    int bump():
+        value = value + step()
+        exit value
+    int helper():
+        exit value * 2
+    int unused_total():
+        exit helper() + 1
+
+int fact(int n):
+    if n == 0:
+        exit 1
+    exit n * fact(n - 1)
+
+int sum_to(int n):
+    if n == 0:
+        exit 0
+    exit n + sum_to(n - 1)
+
+Counter c {0}
+print(c.bump())
+print(sum_to(4))
+exit 0

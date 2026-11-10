@@ -1,0 +1,53 @@
+ProgramNode @1:1
+  structs:
+    StructDecl name='Account' @1:1
+      members:
+        FieldDecl type_name='int' is_const=False name='balance' is_private=True @2:13
+        FieldDecl type_name='int' is_const=True name='id' is_private=False @3:12
+        FieldDecl type_name='int' is_const=False name='owner' is_private=False @4:5
+        FunctionDecl return_type='int' name='audit' is_private=True @5:13
+          params:
+          body:
+            BlockNode @6:1
+              body:
+                ExitStmt @6:9
+                  value:
+                    IdentExpr name='balance' @6:14
+        FunctionDecl return_type='int' name='total' is_private=False @7:12
+          params:
+          body:
+            BlockNode @8:1
+              body:
+                ExitStmt @8:9
+                  value:
+                    BinaryExpr op='+' @8:22
+                      left:
+                        IdentExpr name='balance' @8:14
+                      right:
+                        IdentExpr name='owner' @8:24
+        FunctionDecl return_type='int' name='shown' is_private=False @9:5
+          params:
+          body:
+            BlockNode @10:1
+              body:
+                ExitStmt @10:9
+                  value:
+                    CallExpr name='audit' @10:14
+                      args:
+  functions:
+  statements:
+    DeclStmt type_name='Account' is_const=False name='a' @12:1
+      init:
+        InitExpr @12:11
+          values:
+            NumberExpr text='1' @12:12
+            NumberExpr text='2' @12:15
+            NumberExpr text='3' @12:18
+  exit:
+    ExitStmt @13:1
+      value:
+        ChainExpr is_callable=True @13:6
+          items:
+            IdentExpr name='a' @13:6
+            CallExpr name='total' @13:8
+              args:

@@ -1,0 +1,1 @@
+compilation error: line 11:9: member function 'Counter.inc' assigns a field and cannot be called on constant 'inner'
